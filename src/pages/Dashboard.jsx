@@ -33,142 +33,164 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  if (loading) return <div className="p-8 text-center text-gray-400">Loading Dashboard...</div>;
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+      <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+      <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Initializing Dashboard...</p>
+    </div>
+  );
 
   return (
-    <div className="p-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <div className="h-[calc(100vh-80px)] flex flex-col p-8 lg:p-10 max-w-[1800px] mx-auto animate-in overflow-hidden">
+      {/* Hero Section - Compact */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 shrink-0">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-1">Live Overview</h1>
-          <p className="text-gray-500">Real-time performance metrics</p>
-        </div>
-        <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-          <span className="text-sm font-medium text-gray-600">Syncing Live Data</span>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <StatCard 
-          label="New Leads" 
-          value={stats.new_leads} 
-          icon={UserPlus} 
-          color="bg-blue-500" 
-        />
-        <StatCard 
-          label="Pending Callbacks" 
-          value={stats.pending_callbacks} 
-          icon={PhoneCall} 
-          color="bg-orange-500" 
-        />
-        <StatCard 
-          label="Total Contacts" 
-          value={stats.total_contacts} 
-          icon={Users} 
-          color="bg-purple-500" 
-        />
-        <StatCard 
-          label="Messages Today" 
-          value={stats.total_messages} 
-          icon={MessageSquare} 
-          color="bg-green-500" 
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 glass-card rounded-3xl overflow-hidden">
-          <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-            <h2 className="text-xl font-bold text-gray-800">Recent Leads</h2>
-            <button className="text-primary text-sm font-semibold hover:underline">View All</button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-gray-400 text-xs uppercase tracking-widest bg-gray-50">
-                  <th className="px-6 py-4">Lead Info</th>
-                  <th className="px-6 py-4">Company</th>
-                  <th className="px-6 py-4">Service</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {(recentLeads || []).map((lead, idx) => (
-                  <tr key={lead.id || idx} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <span className="font-bold text-gray-800">{lead.name ? formatSlug(lead.name) : 'New Lead'}</span>
-                        <span className="text-xs text-gray-500">{lead.phone || 'N/A'}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm">{lead.company ? formatSlug(lead.company) : 'Private'}</td>
-                    <td className="px-6 py-4 text-sm max-w-[150px] truncate">{lead.requirement || 'Consultation Request'}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-                        lead.status === 'new' ? 'bg-blue-100 text-blue-600' : 
-                        lead.status === 'converted' ? 'bg-green-100 text-green-600' :
-                        'bg-gray-100 text-gray-600'
-                      }`}>
-                        {lead.status || 'new'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right text-xs text-gray-400">
-                      {lead.created_at ? format(new Date(lead.created_at), 'MMM d, HH:mm') : 'N/A'}
-                    </td>
-                  </tr>
-                ))}
-                {(!recentLeads || recentLeads.length === 0) && (
-                  <tr>
-                    <td colSpan="5" className="px-6 py-10 text-center text-gray-400 text-sm">
-                      No recent leads found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div className="glass-card rounded-3xl p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-6">Service Stats</h2>
-          <div className="space-y-6">
-             <div className="space-y-2">
-               <div className="flex justify-between text-sm">
-                 <span className="text-gray-600">Industrial Automation</span>
-                 <span className="font-bold">45%</span>
-               </div>
-               <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                 <div className="h-full bg-primary" style={{width: '45%'}}></div>
-               </div>
-             </div>
-             <div className="space-y-2">
-               <div className="flex justify-between text-sm">
-                 <span className="text-gray-600">Software & Digital</span>
-                 <span className="font-bold">30%</span>
-               </div>
-               <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                 <div className="h-full bg-secondary" style={{width: '30%'}}></div>
-               </div>
-             </div>
-             <div className="space-y-2">
-               <div className="flex justify-between text-sm">
-                 <span className="text-gray-600">Analytics & IIoT</span>
-                 <span className="font-bold">25%</span>
-               </div>
-               <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                 <div className="h-full bg-green-500" style={{width: '25%'}}></div>
-               </div>
-             </div>
-          </div>
-
-          <div className="mt-10 bg-primary/5 p-4 rounded-2xl border border-primary/10">
-            <div className="flex items-center gap-3 mb-2">
-              <TrendingUp className="text-primary w-5 h-5" />
-              <span className="font-bold text-primary">Efficiency Tip</span>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-primary">Control Panel</span>
             </div>
-            <p className="text-xs text-primary/70 leading-relaxed">
-              Responded to 80% of new leads within 1 hour. This is 15% better than last week! Keep it up.
-            </p>
+            <div className="flex items-center gap-2 bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
+              <span className="text-[9px] font-black uppercase tracking-widest text-green-600 uppercase">Live</span>
+            </div>
+          </div>
+          <h1 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter leading-none">
+            Real-time <span className="bg-gradient-to-r from-primary via-indigo-500 to-secondary bg-clip-text text-transparent">Operations</span>
+          </h1>
+        </div>
+
+        <div className="hidden lg:flex bg-[#020617] p-5 rounded-[25px] shadow-2xl shadow-primary/10 items-center gap-8 border border-white/5">
+          <div>
+            <p className="text-slate-500 text-[9px] font-black uppercase tracking-[0.3em] mb-1">Health</p>
+            <h4 className="text-xl font-black text-white tracking-tight leading-none">99.9%</h4>
+          </div>
+          <div className="w-px h-8 bg-white/10"></div>
+          <div>
+            <p className="text-slate-500 text-[9px] font-black uppercase tracking-[0.3em] mb-1">Status</p>
+            <h4 className="text-xl font-black text-white tracking-tight italic leading-none">ACTIVE</h4>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Stats - Distributed */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 shrink-0">
+        <StatCard
+          label="New Leads"
+          value={stats.new_leads}
+          icon={UserPlus}
+          color="bg-primary"
+        />
+        <StatCard
+          label="Callbacks"
+          value={stats.pending_callbacks}
+          icon={PhoneCall}
+          color="bg-amber-500"
+        />
+        <StatCard
+          label="Bot Contacts"
+          value={stats.total_contacts}
+          icon={Users}
+          color="bg-indigo-500"
+        />
+        <StatCard
+          label="Messages"
+          value={stats.total_messages}
+          icon={MessageSquare}
+          color="bg-cyan-500"
+        />
+      </div>
+
+      {/* Primary Data Area - Flex Fill */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-0 overflow-hidden">
+        <div className="lg:col-span-2 flex flex-col min-h-0">
+          <div className="flex justify-between items-center mb-4 px-4 shrink-0">
+            <h2 className="text-xl font-black text-slate-900 tracking-tighter">Current Stream</h2>
+            <div className="h-px flex-1 mx-8 bg-slate-100"></div>
+          </div>
+          <div className="premium-card flex-1 overflow-hidden border-none bg-white flex flex-col min-h-0 shadow-sm">
+            <div className="flex-1 overflow-y-auto">
+              <table className="w-full text-left border-collapse">
+                <thead className="sticky top-0 z-10">
+                  <tr className="text-slate-500 text-[9px] font-black uppercase tracking-[0.2em] bg-slate-50/80 backdrop-blur-md">
+                    <th className="px-10 py-5">ID</th>
+                    <th className="px-10 py-5">Identity</th>
+                    <th className="px-10 py-5">Status</th>
+                    <th className="px-10 py-5 text-right">Time Stamp</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100/50">
+                  {recentLeads.map((lead, idx) => (
+                    <tr key={lead.id || idx} className="group hover:bg-slate-50/50 transition-all duration-300">
+                      <td className="px-10 py-5 text-[10px] font-black text-slate-400 group-hover:text-primary transition-colors uppercase">#ASK-{String(idx + 1).padStart(3, '0')}</td>
+                      <td className="px-10 py-5">
+                        <div className="flex flex-col">
+                          <span className="font-black text-slate-800 text-sm tracking-tight capitalize">{lead.name ? formatSlug(lead.name) : 'Awaiting Profile'}</span>
+                          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-none mt-1">{lead.company || 'Private'}</span>
+                        </div>
+                      </td>
+                      <td className="px-10 py-5">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-1.5 h-1.5 rounded-full ${lead.status === 'new' ? 'bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.4)]' : 'bg-green-600'}`}></div>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-700">{lead.status || 'new'}</span>
+                        </div>
+                      </td>
+                      <td className="px-10 py-5 text-right text-[10px] font-black text-slate-600 uppercase tracking-widest tabular-nums">
+                        {lead.created_at ? format(new Date(lead.created_at), 'hh:mm a') : '--:--'}
+                      </td>
+                    </tr>
+                  ))}
+                  {recentLeads.length === 0 && (
+                    <tr>
+                      <td colSpan="4" className="px-10 py-20 text-center">
+                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">Database is static</p>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col min-h-0 space-y-6">
+          <div className="premium-card flex-1 p-8 border-none shadow-sm relative overflow-hidden flex flex-col justify-between">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-[60px] rounded-full -mr-16 -mt-16"></div>
+
+            <div className="space-y-8">
+              <h2 className="text-xl font-black text-slate-900 tracking-tighter relative z-10">Operational Flow</h2>
+              <div className="space-y-8 relative z-10">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-600">Bot Efficiency</span>
+                    <span className="text-sm font-black text-primary">94%</span>
+                  </div>
+                  <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                    <div className="h-full bg-gradient-to-r from-primary to-indigo-500 rounded-full" style={{ width: '94%' }}></div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-600">Response Delay</span>
+                    <span className="text-sm font-black text-secondary">0.8s</span>
+                  </div>
+                  <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                    <div className="h-full bg-gradient-to-r from-secondary to-cyan-400 rounded-full" style={{ width: '88%' }}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* 
+              <div className="bg-slate-900 p-6 rounded-[25px] shadow-xl shadow-primary/10 relative z-10 mt-6">
+                 <div className="flex items-center gap-4 mb-3">
+                    <div className="w-8 h-8 bg-primary/20 rounded-xl flex items-center justify-center shrink-0">
+                       <TrendingUp className="text-primary w-4 h-4" />
+                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-white">Bot Insight</span>
+                 </div>
+                 <p className="text-[10px] font-bold text-slate-300 leading-tight">
+                    Lead retention is currently <span className="text-green-400 font-black">+42%</span> above baseline.
+                 </p>
+              </div> */}
           </div>
         </div>
       </div>

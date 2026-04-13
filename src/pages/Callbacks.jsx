@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getCallbacks, markCallbackDone } from '../api';
 import { format } from 'date-fns';
-import { Phone, CheckCircle2, Clock, Calendar } from 'lucide-react';
 import { formatSlug } from '../utils';
 
 const Callbacks = () => {
@@ -23,90 +22,91 @@ const Callbacks = () => {
     }
   };
 
-  const handleMarkDone = async (id) => {
+  const handleUpdateStatus = async (id) => {
     try {
       await markCallbackDone(id);
-      fetchCallbacks();
+      setCallbacks(callbacks.map(c => c.id === id ? { ...c, status: 'completed' } : c));
     } catch (err) {
-      alert('Failed to mark as done');
+      alert('Update failed');
     }
   };
 
-  const pending = callbacks.filter(c => c.status === 'pending');
-  const finished = callbacks.filter(c => c.status === 'done');
-
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Pending Callbacks</h1>
-        <p className="text-gray-500">Scheduled calls requested by clients</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-        {pending.map((c) => (
-          <div key={c.id} className="glass-card p-6 rounded-3xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/5 rounded-bl-full -mr-8 -mt-8 transition-all group-hover:scale-110"></div>
-            
-            <div className="flex items-start justify-between mb-4">
-              <div className="bg-orange-100 p-3 rounded-2xl text-orange-600">
-                <Phone className="w-6 h-6" />
-              </div>
-              <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-lg font-bold">URGENT</span>
-            </div>
-
-            <h3 className="text-xl font-bold text-gray-800 mb-1">{formatSlug(c.name)}</h3>
-            <p className="text-primary font-bold text-lg mb-4">{c.phone}</p>
-
-            <div className="space-y-2 mb-6">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Clock className="w-4 h-4 text-orange-500" />
-                <span>Preferred: <strong>{c.preferred_time}</strong></span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-400">
-                <Calendar className="w-4 h-4" />
-                <span>Requested: {c.created_at ? format(new Date(c.created_at), 'dd MMM, HH:mm') : 'N/A'}</span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => handleMarkDone(c.id)}
-              className="w-full bg-primary text-white font-bold py-3 rounded-xl hover:brightness-110 transition-all flex items-center justify-center gap-2"
-            >
-              <CheckCircle2 className="w-5 h-5" />
-              Mark as Done
-            </button>
+    <div className="p-10 lg:p-14 max-w-[1800px] mx-auto animate-in h-[calc(100vh-80px)] flex flex-col overflow-hidden">
+      <div className="flex justify-between items-end mb-12 shrink-0">
+        <div>
+          <div className="flex items-center gap-3 mb-3">
+             <div className="px-3 py-1 bg-amber-500/10 rounded-full border border-amber-500/20">
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-600">Callbacks</span>
+             </div>
           </div>
-        ))}
-        {pending.length === 0 && (
-          <div className="col-span-full p-12 text-center glass-card rounded-3xl border-dashed border-2 border-gray-200 bg-transparent">
-            <p className="text-gray-400 font-medium italic">No pending callback requests. Good job!</p>
-          </div>
-        )}
+          <h1 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter leading-none">
+             Pending <span className="bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">Callbacks</span>
+          </h1>
+        </div>
+        <div className="text-right">
+           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Unresolved</span>
+           <span className="text-3xl font-black text-amber-500 tracking-tighter tabular-nums">
+             {callbacks.filter(c => c.status === 'pending').length}
+           </span>
+        </div>
       </div>
 
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-400 uppercase tracking-widest text-sm">Completed</h2>
-      </div>
-      
-      <div className="glass-card rounded-3xl overflow-hidden opacity-60">
-        <table className="w-full text-left">
-          <tbody className="divide-y divide-gray-50">
-            {finished.slice(0, 10).map((c) => (
-              <tr key={c.id}>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 className="text-green-500 w-5 h-5" />
-                    <span className="font-bold text-gray-700">{formatSlug(c.name)}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">{c.phone}</td>
-                <td className="px-6 py-4 text-xs text-gray-400">
-                  Completed {c.created_at ? format(new Date(c.created_at), 'dd MMM yyyy') : 'Recently'}
-                </td>
+      <div className="premium-card flex-1 overflow-hidden bg-white shadow-sm border-none flex flex-col min-h-0">
+        <div className="flex-1 overflow-y-auto">
+          <table className="w-full text-left border-collapse">
+            <thead className="sticky top-0 z-10">
+              <tr className="text-slate-500 text-[9px] font-black uppercase tracking-[0.2em] bg-slate-50/80 backdrop-blur-md">
+                <th className="px-10 py-6">Requestor</th>
+                <th className="px-10 py-6">Status</th>
+                <th className="px-10 py-6">Request Time</th>
+                <th className="px-10 py-6 text-right">Operational Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-100/50">
+              {callbacks.map((callback, idx) => (
+                <tr key={callback.id || idx} className="group hover:bg-slate-50/50 transition-all">
+                  <td className="px-10 py-8">
+                    <div className="flex flex-col">
+                      <span className="font-black text-slate-800 text-sm tracking-tight capitalize">{callback.name ? formatSlug(callback.name) : 'Awaiting Profile'}</span>
+                      <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">+{callback.phone}</span>
+                    </div>
+                  </td>
+                  <td className="px-10 py-8">
+                     <div className="flex items-center gap-2">
+                        <div className={`w-1.5 h-1.5 rounded-full ${callback.status === 'pending' ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'bg-green-500'}`}></div>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${callback.status === 'pending' ? 'text-amber-600' : 'text-green-600'}`}>
+                           {callback.status}
+                        </span>
+                     </div>
+                  </td>
+                  <td className="px-10 py-8 text-[10px] font-black text-slate-600 uppercase tracking-widest tabular-nums font-mono">
+                    {callback.created_at ? format(new Date(callback.created_at), 'MMM d, HH:mm') : '--:--'}
+                  </td>
+                  <td className="px-10 py-8 text-right">
+                    {callback.status === 'pending' ? (
+                      <button 
+                        onClick={() => handleUpdateStatus(callback.id)}
+                        className="bg-slate-900 hover:bg-primary text-white text-[9px] font-black uppercase tracking-widest px-6 py-3 rounded-xl transition-all active:scale-95"
+                      >
+                        Resolve Task
+                      </button>
+                    ) : (
+                       <span className="text-[9px] font-black uppercase tracking-[0.2em] text-green-500">Operation Sync</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+              {callbacks.length === 0 && !loading && (
+                <tr>
+                  <td colSpan="4" className="px-10 py-20 text-center">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">All callback requests resolved</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

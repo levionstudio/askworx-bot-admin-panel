@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { getContacts } from '../api';
 import { format } from 'date-fns';
-import { Users, Search, MessageSquare, ExternalLink } from 'lucide-react';
-import { formatSlug, getInitial } from '../utils';
+import { formatSlug } from '../utils';
 
 const Contacts = () => {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchContacts();
@@ -24,76 +22,78 @@ const Contacts = () => {
     }
   };
 
-  const filtered = contacts.filter(c => 
-    (c.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
-    c.phone.includes(searchTerm) ||
-    (c.company || '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-10 lg:p-14 max-w-[1800px] mx-auto animate-in h-[calc(100vh-80px)] flex flex-col overflow-hidden">
+      <div className="flex justify-between items-end mb-12 shrink-0">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Contacts</h1>
-          <p className="text-gray-500">Everyone who has interacted with the bot</p>
-        </div>
-        <div className="bg-primary/5 px-4 py-2 rounded-xl text-primary font-bold flex items-center gap-2">
-          <Users className="w-5 h-5" />
-          <span>{contacts.length} Total</span>
-        </div>
-      </div>
-
-      <div className="relative mb-6">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-        <input 
-          type="text" 
-          placeholder="Search contacts..."
-          className="input-field pl-12"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filtered.map((c) => (
-          <div key={c.id || c.phone} className="glass-card p-6 rounded-3xl hover:shadow-xl transition-all border border-transparent hover:border-primary/10">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-xl">
-                {getInitial(c.name, c.phone)}
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-800 truncate max-w-[150px]">{c.name ? formatSlug(c.name) : c.phone}</h3>
-                <p className="text-xs text-gray-400">
-                  Joined {c.joined_at ? format(new Date(c.joined_at), 'MMM yyyy') : 'Recently'}
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-3 mb-6">
-              <div className="flex flex-col">
-                <span className="text-[10px] text-gray-400 uppercase font-black">WhatsApp</span>
-                <span className="text-sm font-bold text-gray-700">{c.phone}</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] text-gray-400 uppercase font-black">Company</span>
-                <span className="text-sm text-gray-600 truncate">{c.company ? formatSlug(c.company) : 'Not Specified'}</span>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <button 
-                onClick={() => window.location.href = `/messages?phone=${c.phone}`}
-                className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2 transition-colors"
-              >
-                <MessageSquare className="w-4 h-4" />
-                View Chat
-              </button>
-              <button className="p-2 bg-primary/5 text-primary rounded-xl hover:bg-primary/10 transition-colors">
-                <ExternalLink className="w-4 h-4" />
-              </button>
-            </div>
+          <div className="flex items-center gap-3 mb-3">
+             <div className="px-3 py-1 bg-indigo-500/10 rounded-full border border-indigo-500/20">
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-indigo-600">Contacts</span>
+             </div>
           </div>
-        ))}
+          <h1 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter leading-none">
+             Global <span className="bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">Contacts</span>
+          </h1>
+        </div>
+        <div className="text-right">
+           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Authenticated</span>
+           <span className="text-3xl font-black text-indigo-500 tracking-tighter tabular-nums">{contacts.length}</span>
+        </div>
+      </div>
+
+      <div className="premium-card flex-1 overflow-hidden bg-white shadow-sm border-none flex flex-col min-h-0">
+        <div className="flex-1 overflow-y-auto">
+          <table className="w-full text-left border-collapse">
+            <thead className="sticky top-0 z-10">
+              <tr className="text-slate-500 text-[9px] font-black uppercase tracking-[0.2em] bg-slate-50/80 backdrop-blur-md">
+                <th className="px-10 py-6">User Identity</th>
+                <th className="px-10 py-6">Session ID</th>
+                <th className="px-10 py-6">Engagement Rating</th>
+                <th className="px-10 py-6 text-right">Synchronization</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100/50">
+              {contacts.map((contact, idx) => (
+                <tr key={contact.id || idx} className="group hover:bg-slate-50/50 transition-all">
+                  <td className="px-10 py-8">
+                    <div className="flex items-center gap-6">
+                       <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-all shrink-0">
+                         {(contact.name || 'A')[0].toUpperCase()}
+                       </div>
+                       <div className="flex flex-col min-w-0">
+                          <span className="font-black text-slate-800 text-sm tracking-tight capitalize truncate">{contact.name ? formatSlug(contact.name) : 'Anonymous User'}</span>
+                          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">+{contact.phone}</span>
+                       </div>
+                    </div>
+                  </td>
+                  <td className="px-10 py-8">
+                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">ID: {contact.id}</span>
+                  </td>
+                  <td className="px-10 py-8">
+                     <div className="flex gap-1.5">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <div key={s} className={`w-1.5 h-1.5 rounded-full ${s <= 4 ? 'bg-indigo-500/40' : 'bg-slate-100'}`}></div>
+                        ))}
+                     </div>
+                  </td>
+                  <td className="px-10 py-8 text-right">
+                     <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest block mb-1">Last Joined</span>
+                     <span className="text-xs font-bold text-slate-700">
+                       {contact.created_at ? format(new Date(contact.created_at), 'MMM d, yyyy') : '--:--'}
+                     </span>
+                  </td>
+                </tr>
+              ))}
+              {contacts.length === 0 && !loading && (
+                <tr>
+                  <td colSpan="4" className="px-10 py-20 text-center">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">No authenticated contacts found</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
