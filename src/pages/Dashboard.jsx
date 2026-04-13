@@ -41,7 +41,7 @@ const Dashboard = () => {
   );
 
   return (
-    <div className="h-[calc(100vh-80px)] flex flex-col p-8 lg:p-10 max-w-[1800px] mx-auto animate-in overflow-hidden">
+    <div className="p-6 lg:p-14 max-w-[1700px] mx-auto animate-in h-full flex flex-col min-h-0">
       {/* Hero Section - Compact */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 shrink-0">
         <div>
@@ -73,7 +73,7 @@ const Dashboard = () => {
       </div>
 
       {/* Main Stats - Distributed */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 shrink-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 shrink-0">
         <StatCard
           label="New Leads"
           value={stats.new_leads}

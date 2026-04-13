@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getContacts, getChatHistory, sendMessage } from '../api';
 import { useSearchParams } from 'react-router-dom';
-import { Send, Search, MessageSquare } from 'lucide-react';
+import { Send, Search, MessageSquare, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatSlug } from '../utils';
 
@@ -107,7 +107,7 @@ const Messages = () => {
   return (
     <div className="flex h-[calc(100vh-80px)] overflow-hidden animate-in">
       {/* Search/Contact List Sidebar */}
-      <div className="w-80 bg-white border-r border-slate-100 flex flex-col shrink-0">
+      <div className={`w-full lg:w-80 bg-white border-r border-slate-100 flex flex-col shrink-0 ${selectedContact ? 'hidden lg:flex' : 'flex'}`}>
         <div className="p-6 border-b border-slate-50 bg-slate-50/50">
           <div className="px-3 py-1 bg-primary/10 rounded-full border border-primary/20 inline-block mb-4">
             <span className="text-[9px] font-black uppercase tracking-[0.3em] text-primary">Messages</span>
@@ -150,11 +150,17 @@ const Messages = () => {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col bg-slate-50/50 relative">
+      <div className={`flex-1 flex flex-col bg-slate-50/50 relative ${selectedContact ? 'flex' : 'hidden lg:flex'}`}>
         {selectedContact ? (
           <>
-            <div className="h-20 px-10 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between shrink-0 sticky top-0 z-20">
+            <div className="h-20 px-6 lg:px-10 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between shrink-0 sticky top-0 z-20">
               <div className="flex items-center gap-4">
+                 <button 
+                   onClick={() => setSelectedContact(null)}
+                   className="lg:hidden p-2 hover:bg-slate-50 rounded-xl mr-2"
+                 >
+                    <ArrowLeft className="w-5 h-5 text-slate-500" />
+                 </button>
                  <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-black text-xs">
                     {(selectedContact.name || 'A')[0].toUpperCase()}
                  </div>

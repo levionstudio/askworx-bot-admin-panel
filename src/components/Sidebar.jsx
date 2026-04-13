@@ -1,17 +1,18 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Users, 
-  UserPlus, 
-  PhoneCall, 
-  MessageSquare, 
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  Users,
+  UserPlus,
+  PhoneCall,
+  MessageSquare,
   LogOut,
   Cpu
 } from 'lucide-react';
 
-const Sidebar = ({ isCollapsed }) => {
+const Sidebar = ({ collapsed, setCollapsed }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     localStorage.removeItem('askworx_token');
@@ -27,15 +28,17 @@ const Sidebar = ({ isCollapsed }) => {
   ];
 
   return (
-    <div className={`sidebar-container transition-all duration-500 border-r border-white/5 ${isCollapsed ? 'w-24' : 'w-72'}`}>
-      <div className={`flex items-center gap-4 transition-all duration-500 overflow-hidden ${isCollapsed ? 'pt-10 px-0 justify-center' : 'p-10'}`}>
+    <aside
+      className={`fixed lg:relative inset-y-0 left-0 bg-[#020617] transition-all duration-500 z-50 flex flex-col overflow-hidden shadow-2xl lg:shadow-none
+        ${collapsed ? 'w-0 -translate-x-full lg:w-24 lg:translate-x-0' : 'w-72 translate-x-0'}`}
+    >
+      <div className={`flex items-center gap-4 transition-all duration-500 overflow-hidden ${collapsed ? 'pt-10 px-0 justify-center' : 'p-10'}`}>
         <div className="bg-gradient-to-br from-primary to-secondary p-3 rounded-[18px] shadow-lg shadow-primary/20 shrink-0">
           <Cpu className="w-6 h-6 text-white" />
         </div>
-        {!isCollapsed && (
+        {!collapsed && (
           <div className="animate-in whitespace-nowrap">
             <h1 className="font-black text-2xl leading-none text-white tracking-tighter uppercase">ASKworX</h1>
-            <p className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em] mt-1.5">Elite AI</p>
           </div>
         )}
       </div>
@@ -45,28 +48,29 @@ const Sidebar = ({ isCollapsed }) => {
           <NavLink
             key={item.to}
             to={item.to}
+            onClick={() => setCollapsed(true)}
             className={({ isActive }) =>
-              `nav-link ${isActive ? 'active' : ''} ${isCollapsed ? 'justify-center px-0 py-6 mb-2' : ''}`
+              `nav-link ${isActive ? 'active' : ''} ${collapsed ? 'justify-center px-0 py-6 mb-2' : ''}`
             }
-            title={isCollapsed ? item.label : ''}
+            title={collapsed ? item.label : ''}
           >
-            <item.icon className={`w-5 h-5 opacity-80 shrink-0 ${isCollapsed ? 'scale-[1.3] text-white' : ''}`} />
-            {!isCollapsed && <span className="text-[12px] uppercase tracking-widest animate-in whitespace-nowrap font-black">{item.label}</span>}
+            <item.icon className={`w-5 h-5 opacity-80 shrink-0 ${collapsed ? 'scale-[1.3] text-white' : ''}`} />
+            {!collapsed && <span className="text-[12px] uppercase tracking-widest animate-in whitespace-nowrap font-black">{item.label}</span>}
           </NavLink>
         ))}
       </nav>
 
-      <div className={`transition-all duration-500 ${isCollapsed ? 'p-0 pb-12 flex justify-center' : 'p-10'}`}>
+      <div className={`transition-all duration-500 ${collapsed ? 'p-0 pb-12 flex justify-center' : 'p-10'}`}>
         <button
           onClick={handleLogout}
-          className={`flex items-center gap-4 text-slate-500 hover:text-white transition-all text-left font-black text-[10px] uppercase tracking-[0.2em] ${isCollapsed ? 'justify-center border-t border-white/5 pt-10 w-full' : 'w-full'}`}
-          title={isCollapsed ? 'Exit' : ''}
+          className={`flex items-center gap-4 text-slate-500 hover:text-white transition-all text-left font-black text-[10px] uppercase tracking-[0.2em] ${collapsed ? 'justify-center border-t border-white/5 pt-10 w-full' : 'w-full'}`}
+          title={collapsed ? 'Exit' : ''}
         >
-          <LogOut className={`w-5 h-5 shrink-0 ${isCollapsed ? 'scale-[1.3] text-red-400' : ''}`} />
-          {!isCollapsed && <span className="whitespace-nowrap">Exit Session</span>}
+          <LogOut className={`w-5 h-5 shrink-0 ${collapsed ? 'scale-[1.3] text-red-400' : ''}`} />
+          {!collapsed && <span className="whitespace-nowrap">Exit Session</span>}
         </button>
       </div>
-    </div>
+    </aside>
   );
 };
 

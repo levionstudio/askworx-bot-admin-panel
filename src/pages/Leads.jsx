@@ -42,8 +42,8 @@ const Leads = () => {
       </div>
 
       <div className="premium-card flex-1 overflow-hidden bg-white shadow-sm border-none flex flex-col min-h-0">
-        <div className="flex-1 overflow-y-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="flex-1 overflow-auto">
+          <table className="w-full text-left border-collapse min-w-[800px]">
             <thead className="sticky top-0 z-10">
               <tr className="text-slate-500 text-[9px] font-black uppercase tracking-[0.2em] bg-slate-50/80 backdrop-blur-md">
                 <th className="px-10 py-6">Identity</th>

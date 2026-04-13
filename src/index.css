@@ -16,7 +16,7 @@
 @layer base {
   body {
     @apply bg-slate-50 text-slate-900 antialiased;
-    font-family: 'Outfit', sans-serif;
+    font-family: system-ui, sans-serif;
   }
 }
 
