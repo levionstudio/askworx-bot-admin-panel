@@ -7,7 +7,8 @@ import {
   PhoneCall,
   MessageSquare,
   LogOut,
-  Cpu
+  Cpu,
+  Radio
 } from 'lucide-react';
 
 const Sidebar = ({ collapsed, setCollapsed }) => {
@@ -21,6 +22,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
 
   const navItems = [
     { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/campaigns', icon: Radio, label: 'Campaigns' },
     { to: '/leads', icon: UserPlus, label: 'Leads' },
     { to: '/callbacks', icon: PhoneCall, label: 'Callbacks' },
     { to: '/contacts', icon: Users, label: 'Contacts' },

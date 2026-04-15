@@ -8,6 +8,7 @@ import Leads from './pages/Leads';
 import Callbacks from './pages/Callbacks';
 import Contacts from './pages/Contacts';
 import Messages from './pages/Messages';
+import Campaigns from './pages/Campaigns';
 
 const ProtectedRoute = ({ children }) => {
   const [collapsed, setCollapsed] = React.useState(false);
@@ -73,6 +74,7 @@ function App() {
         <Route path="/callbacks" element={<ProtectedRoute><Callbacks /></ProtectedRoute>} />
         <Route path="/contacts" element={<ProtectedRoute><Contacts /></ProtectedRoute>} />
         <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+        <Route path="/campaigns" element={<ProtectedRoute><Campaigns /></ProtectedRoute>} />
       </Routes>
     </Router>
   );
