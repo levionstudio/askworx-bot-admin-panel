@@ -40,8 +40,10 @@ export default function Campaigns() {
   const [uploadSource, setUploadSource] = useState('url'); // 'url' or 'local'
   const [uploading, setUploading]       = useState(false);
 
-  // Get base URL for images
-  const API_BASE = import.meta.env.VITE_API_URL || window.location.origin;
+  // Smarter base URL: use current origin if deployed
+  const API_BASE = import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.includes('localhost') 
+    ? import.meta.env.VITE_API_URL 
+    : window.location.origin;
 
   const load = async () => {
     try {
