@@ -41,7 +41,7 @@ export const sendMessage = (phone, message) => api.post('/send-message', { phone
 export const getCampaigns = () => api.get('/campaigns');
 export const createCampaign = (data) => api.post('/campaigns', data);
 export const deleteCampaign = (id) => api.delete(`/campaigns/${id}`);
-export const getCampaignAnalytics = (id) => api.get(`/api/campaigns/${id}/analytics`);
+export const getCampaignAnalytics = (id) => api.get(`/campaigns/${id}/analytics`);
 
 export const uploadImage = (file) => {
   const formData = new FormData();
