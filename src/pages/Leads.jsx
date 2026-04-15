@@ -58,7 +58,12 @@ const Leads = () => {
                   <td className="px-10 py-8">
                     <div className="flex flex-col">
                       <span className="font-black text-slate-800 text-sm tracking-tight capitalize">{lead.name ? formatSlug(lead.name) : 'Anonymous'}</span>
-                      <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">+{lead.phone}</span>
+                      <span className="text-[10px] text-primary font-black uppercase tracking-widest mt-1">
+                        {lead.contact_phone ? `Direct: ${lead.contact_phone}` : `WA: +${lead.phone}`}
+                      </span>
+                      {lead.contact_phone && (
+                        <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tight">WhatsApp Origin: +{lead.phone}</span>
+                      )}
                     </div>
                   </td>
                   <td className="px-10 py-8 text-sm font-semibold text-slate-600 uppercase tracking-tight">{lead.company ? formatSlug(lead.company) : 'N/A'}</td>
