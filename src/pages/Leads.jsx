@@ -35,13 +35,21 @@ const Leads = () => {
 
   const filteredLeads = leads.filter(l => {
     if (activeTab === 'all') return true;
-    const isExpert = l.requirement?.toLowerCase().includes('request:') || 
-                    l.requirement?.toLowerCase().includes('quotation:') ||
-                    l.requirement?.toLowerCase().includes('query:');
+    const req = l.requirement?.toLowerCase() || '';
+    const isExpert = req.includes('request:') || 
+                    req.includes('quotation:') ||
+                    req.includes('query:') ||
+                    req.includes(': ');
+    
     if (activeTab === 'expert') return isExpert;
-    if (activeTab === 'quote') return !isExpert;
+    if (activeTab === 'quote') return !isExpert && req !== '';
     return true;
   });
+
+  const handleRefresh = () => {
+    setLoading(true);
+    fetchLeads();
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -125,7 +133,7 @@ const Leads = () => {
                     </span>
                   </td>
                   <td className="px-10 py-8 text-right">
-                    <div className="flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex gap-2 justify-end transition-opacity">
                       {lead.status === 'new' && (
                         <button 
                           onClick={() => handleStatusUpdate(lead.id, 'called')}
