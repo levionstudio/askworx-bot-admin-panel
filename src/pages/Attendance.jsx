@@ -37,34 +37,34 @@ const Attendance = () => {
       <div className="flex justify-between items-end mb-12 shrink-0">
         <div>
           <div className="flex items-center gap-3 mb-3">
-             <div className="px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-600">Operations</span>
-             </div>
+            <div className="px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-600">Operations</span>
+            </div>
           </div>
           <h1 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter leading-none">
-             Attendance <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">Log</span>
+            Attendance <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">Log</span>
           </h1>
         </div>
         <div className="flex gap-4 items-center">
-            <div className="flex items-center gap-3 bg-slate-100 p-2 rounded-2xl">
-              <input 
-                type="date"
-                className="bg-white border-none rounded-xl px-4 py-2 text-[10px] font-bold text-slate-600 outline-none transition-all"
-                value={filters.start_date}
-                onChange={(e) => setFilters({ ...filters, start_date: e.target.value })}
-              />
-              <span className="text-slate-300 font-black">—</span>
-              <input 
-                type="date"
-                className="bg-white border-none rounded-xl px-4 py-2 text-[10px] font-bold text-slate-600 outline-none transition-all"
-                value={filters.end_date}
-                onChange={(e) => setFilters({ ...filters, end_date: e.target.value })}
-              />
-            </div>
-            <div className="text-right ml-4">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Total Entries</span>
-                <span className="text-3xl font-black text-slate-900 tracking-tighter tabular-nums">{total}</span>
-            </div>
+          <div className="flex items-center gap-3 bg-slate-100 p-2 rounded-2xl">
+            <input
+              type="date"
+              className="bg-white border-none rounded-xl px-4 py-2 text-[10px] font-bold text-slate-600 outline-none transition-all"
+              value={filters.start_date}
+              onChange={(e) => setFilters({ ...filters, start_date: e.target.value })}
+            />
+            <span className="text-slate-300 font-black">—</span>
+            <input
+              type="date"
+              className="bg-white border-none rounded-xl px-4 py-2 text-[10px] font-bold text-slate-600 outline-none transition-all"
+              value={filters.end_date}
+              onChange={(e) => setFilters({ ...filters, end_date: e.target.value })}
+            />
+          </div>
+          <div className="text-right ml-4">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Total Entries</span>
+            <span className="text-3xl font-black text-slate-900 tracking-tighter tabular-nums">{total}</span>
+          </div>
         </div>
       </div>
 
@@ -91,20 +91,20 @@ const Attendance = () => {
                   </td>
                   <td className="px-10 py-8">
                     {r.check_in ? (
-                        <div className="flex flex-col">
-                            <span className="text-xs font-black text-emerald-600 uppercase tracking-widest">{format(new Date(r.check_in), 'hh:mm a')}</span>
-                            <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tighter mt-1">Arrival Recorded</span>
-                        </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-black text-emerald-600 uppercase tracking-widest">{format(new Date(r.check_in), 'hh:mm a')}</span>
+                        <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tighter mt-1">Arrival Recorded</span>
+                      </div>
                     ) : '--:--'}
                   </td>
                   <td className="px-10 py-8">
                     {r.check_out ? (
-                        <div className="flex flex-col">
-                            <span className="text-xs font-black text-blue-600 uppercase tracking-widest">{format(new Date(r.check_out), 'hh:mm a')}</span>
-                            <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tighter mt-1">Departure Recorded</span>
-                        </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-black text-blue-600 uppercase tracking-widest">{format(new Date(r.check_out), 'hh:mm a')}</span>
+                        <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tighter mt-1">Departure Recorded</span>
+                      </div>
                     ) : (
-                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Ongoing...</span>
+                      <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Ongoing...</span>
                     )}
                   </td>
                   <td className="px-10 py-8">
@@ -125,12 +125,12 @@ const Attendance = () => {
             </tbody>
           </table>
         </div>
-        
+
         {/* Pagination Controls */}
         {total > 10 && (
           <div className="shrink-0 px-10 py-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-               Showing Page <span className="text-slate-900">{page + 1}</span> of {Math.ceil(total / 10)}
+              Showing Page <span className="text-slate-900">{page + 1}</span> of {Math.ceil(total / 10)}
             </span>
             <div className="flex gap-6 items-center">
               <button

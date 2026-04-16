@@ -9,13 +9,13 @@ import {
 
 const STATUS_STYLES = {
   scheduled: 'bg-blue-50 text-blue-700 border border-blue-200',
-  sent:       'bg-emerald-50 text-emerald-700 border border-emerald-200',
-  cancelled:  'bg-red-50 text-red-600 border border-red-200',
+  sent: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  cancelled: 'bg-red-50 text-red-600 border border-red-200',
 };
 
 const STATUS_ICONS = {
   scheduled: <Clock className="w-3 h-3" />,
-  sent:      <CheckCircle className="w-3 h-3" />,
+  sent: <CheckCircle className="w-3 h-3" />,
   cancelled: <XCircle className="w-3 h-3" />,
 };
 
@@ -30,22 +30,22 @@ const EMPTY_POSTER = {
 import Modal from '../components/Modal';
 
 export default function Campaigns() {
-  const [campaigns, setCampaigns]     = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [showForm, setShowForm]       = useState(false);
-  const [formType, setFormType]       = useState('quiz');
-  const [form, setForm]               = useState(EMPTY_QUIZ);
-  const [errors, setErrors]           = useState({});
-  const [submitting, setSubmitting]   = useState(false);
-  const [expandedId, setExpandedId]   = useState(null);
-  const [analytics, setAnalytics]     = useState({});
+  const [campaigns, setCampaigns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [formType, setFormType] = useState('quiz');
+  const [form, setForm] = useState(EMPTY_QUIZ);
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [expandedId, setExpandedId] = useState(null);
+  const [analytics, setAnalytics] = useState({});
   const [uploadSource, setUploadSource] = useState('url'); // 'url' or 'local'
-  const [uploading, setUploading]       = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'success' });
 
   // Smarter base URL: use current origin if deployed
-  const API_BASE = import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.includes('localhost') 
-    ? import.meta.env.VITE_API_URL 
+  const API_BASE = import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.includes('localhost')
+    ? import.meta.env.VITE_API_URL
     : window.location.origin;
 
   const [total, setTotal] = useState(0);
@@ -78,16 +78,16 @@ export default function Campaigns() {
   const validate = () => {
     const e = {};
     if (!form.scheduled_at) e.scheduled_at = 'Schedule date & time required';
-    
+
     if (formType === 'quiz') {
-      if (!form.question.trim())   e.question   = 'Question is required';
-      if (!form.option_a.trim())   e.option_a   = 'Option A required';
-      if (!form.option_b.trim())   e.option_b   = 'Option B required';
-      if (!form.option_c.trim())   e.option_c   = 'Option C required';
+      if (!form.question.trim()) e.question = 'Question is required';
+      if (!form.option_a.trim()) e.option_a = 'Option A required';
+      if (!form.option_b.trim()) e.option_b = 'Option B required';
+      if (!form.option_c.trim()) e.option_c = 'Option C required';
       if (!form.explanation.trim()) e.explanation = 'Explanation required';
       if (form.explanation.length > 300) e.explanation = 'Max 300 characters';
     }
-    
+
     if (formType === 'poster') {
       if (uploadSource === 'url' && !form.image_url.trim()) {
         e.image_url = 'Image URL required';
@@ -96,7 +96,7 @@ export default function Campaigns() {
         e.local_file = 'Image file required';
       }
     }
-    
+
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -105,7 +105,7 @@ export default function Campaigns() {
     ev.preventDefault();
     if (!validate()) return;
     setSubmitting(true);
-    
+
     try {
       let finalForm = { ...form, type: formType };
 
@@ -130,7 +130,7 @@ export default function Campaigns() {
       // Convert datetime-local (YYYY-MM-DDTHH:MM) to full ISO string for Go's time.Time
       const scheduledISO = new Date(form.scheduled_at).toISOString();
       await createCampaign({ ...finalForm, scheduled_at: scheduledISO });
-      
+
       setModal({
         open: true,
         title: 'Campaign Scheduled! 🚀',
@@ -175,7 +175,7 @@ export default function Campaigns() {
       try {
         const { data } = await getCampaignAnalytics(camp.id);
         setAnalytics(prev => ({ ...prev, [camp.id]: data }));
-      } catch {}
+      } catch { }
     }
   };
 
@@ -206,8 +206,8 @@ export default function Campaigns() {
 
   return (
     <div className="p-6 lg:p-10 max-w-5xl mx-auto">
-      <Modal 
-        isOpen={modal.open} 
+      <Modal
+        isOpen={modal.open}
         onClose={() => setModal({ ...modal, open: false })}
         title={modal.title}
         message={modal.message}
@@ -240,11 +240,10 @@ export default function Campaigns() {
                 key={t}
                 type="button"
                 onClick={() => switchType(t)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-semibold transition-all ${
-                  formType === t
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-semibold transition-all ${formType === t
                     ? 'bg-indigo-600 text-white border-indigo-600 shadow'
                     : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300'
-                }`}
+                  }`}
               >
                 <Icon className="w-4 h-4" /> {label}
               </button>
@@ -422,10 +421,10 @@ export default function Campaigns() {
                         <h3 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-3">Quiz Performance</h3>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                           {[
-                            ['Total Sent',    a.total_sent,    'bg-slate-100 text-slate-700'],
-                            ['Responses',     a.total_answers, 'bg-blue-100 text-blue-700'],
-                            ['✅ Correct',    a.correct,       'bg-emerald-100 text-emerald-700'],
-                            ['❌ Incorrect',  a.incorrect,     'bg-red-100 text-red-700'],
+                            ['Total Sent', a.total_sent, 'bg-slate-100 text-slate-700'],
+                            ['Responses', a.total_answers, 'bg-blue-100 text-blue-700'],
+                            ['✅ Correct', a.correct, 'bg-emerald-100 text-emerald-700'],
+                            ['❌ Incorrect', a.incorrect, 'bg-red-100 text-red-700'],
                           ].map(([label, val, cls]) => (
                             <div key={label} className={`rounded-xl p-3 text-center ${cls}`}>
                               <p className="text-xl font-black">{val ?? 0}</p>
@@ -508,7 +507,7 @@ export default function Campaigns() {
       {total > 10 && (
         <div className="mt-10 px-6 py-4 bg-white border border-slate-200 rounded-2xl flex items-center justify-between shadow-sm">
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-             Showing Page <span className="text-slate-900">{page + 1}</span> of {Math.ceil(total / 10)}
+            Showing Page <span className="text-slate-900">{page + 1}</span> of {Math.ceil(total / 10)}
           </span>
           <div className="flex gap-6 items-center">
             <button

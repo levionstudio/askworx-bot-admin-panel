@@ -27,17 +27,17 @@ const Contacts = () => {
       <div className="flex justify-between items-end mb-12 shrink-0">
         <div>
           <div className="flex items-center gap-3 mb-3">
-             <div className="px-3 py-1 bg-indigo-500/10 rounded-full border border-indigo-500/20">
-                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-indigo-600">Contacts</span>
-             </div>
+            <div className="px-3 py-1 bg-indigo-500/10 rounded-full border border-indigo-500/20">
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-indigo-600">Contacts</span>
+            </div>
           </div>
           <h1 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter leading-none">
-             Global <span className="bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">Contacts</span>
+            Global <span className="bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">Contacts</span>
           </h1>
         </div>
         <div className="text-right">
-           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Authenticated</span>
-           <span className="text-3xl font-black text-indigo-500 tracking-tighter tabular-nums">{contacts.length}</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Authenticated</span>
+          <span className="text-3xl font-black text-indigo-500 tracking-tighter tabular-nums">{contacts.length}</span>
         </div>
       </div>
 
@@ -57,30 +57,30 @@ const Contacts = () => {
                 <tr key={contact.id || idx} className="group hover:bg-slate-50/50 transition-all">
                   <td className="px-10 py-8">
                     <div className="flex items-center gap-6">
-                       <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-all shrink-0">
-                         {(contact.name || 'A')[0].toUpperCase()}
-                       </div>
-                       <div className="flex flex-col min-w-0">
-                          <span className="font-black text-slate-800 text-sm tracking-tight capitalize truncate">{contact.name ? formatSlug(contact.name) : 'Anonymous User'}</span>
-                          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">+{contact.phone}</span>
-                       </div>
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-all shrink-0">
+                        {(contact.name || 'A')[0].toUpperCase()}
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-black text-slate-800 text-sm tracking-tight capitalize truncate">{contact.name ? formatSlug(contact.name) : 'Anonymous User'}</span>
+                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">+{contact.phone}</span>
+                      </div>
                     </div>
                   </td>
                   <td className="px-10 py-8">
-                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">ID: {contact.id}</span>
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">ID: {contact.id}</span>
                   </td>
                   <td className="px-10 py-8">
-                     <div className="flex gap-1.5">
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <div key={s} className={`w-1.5 h-1.5 rounded-full ${s <= 4 ? 'bg-indigo-500/40' : 'bg-slate-100'}`}></div>
-                        ))}
-                     </div>
+                    <div className="flex gap-1.5">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <div key={s} className={`w-1.5 h-1.5 rounded-full ${s <= 4 ? 'bg-indigo-500/40' : 'bg-slate-100'}`}></div>
+                      ))}
+                    </div>
                   </td>
                   <td className="px-10 py-8 text-right">
-                     <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest block mb-1">Last Joined</span>
-                     <span className="text-xs font-bold text-slate-700">
-                       {contact.created_at ? format(new Date(contact.created_at), 'MMM d, yyyy') : '--:--'}
-                     </span>
+                    <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest block mb-1">Last Joined</span>
+                    <span className="text-xs font-bold text-slate-700">
+                      {contact.created_at ? format(new Date(contact.created_at), 'MMM d, yyyy') : '--:--'}
+                    </span>
                   </td>
                 </tr>
               ))}

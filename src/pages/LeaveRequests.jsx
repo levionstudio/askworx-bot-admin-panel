@@ -201,4 +201,10 @@ const LeaveRequests = () => {
               </button>
             </div>
           </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default LeaveRequests;

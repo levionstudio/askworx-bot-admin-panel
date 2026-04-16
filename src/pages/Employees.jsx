@@ -19,9 +19,9 @@ const Employees = () => {
 
   const fetchEmployees = async () => {
     try {
-      const resp = await getEmployees({ 
-        limit: 10, 
-        offset: page * 10 
+      const resp = await getEmployees({
+        limit: 10,
+        offset: page * 10
       });
       setEmployees(resp.data.data || []);
       setTotal(resp.data.total || 0);
@@ -75,8 +75,8 @@ const Employees = () => {
 
   return (
     <div className="p-10 lg:p-14 max-w-[1800px] mx-auto animate-in h-[calc(100vh-80px)] flex flex-col overflow-hidden">
-      <Modal 
-        isOpen={modal.open} 
+      <Modal
+        isOpen={modal.open}
         onClose={() => setModal({ ...modal, open: false })}
         title={modal.title}
         message={modal.message}
@@ -85,15 +85,15 @@ const Employees = () => {
       <div className="flex justify-between items-end mb-12 shrink-0">
         <div>
           <div className="flex items-center gap-3 mb-3">
-             <div className="px-3 py-1 bg-cyan-500/10 rounded-full border border-cyan-500/20">
-                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-cyan-600">Human Resources</span>
-             </div>
+            <div className="px-3 py-1 bg-cyan-500/10 rounded-full border border-cyan-500/20">
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-cyan-600">Human Resources</span>
+            </div>
           </div>
           <h1 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter leading-none">
-             Team <span className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">Roster</span>
+            Team <span className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">Roster</span>
           </h1>
         </div>
-        <button 
+        <button
           onClick={() => setShowAddModal(true)}
           className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-slate-900/20 active:scale-95"
         >
@@ -137,7 +137,7 @@ const Employees = () => {
                     </div>
                   </td>
                   <td className="px-10 py-8 text-right">
-                    <button 
+                    <button
                       onClick={() => handleDelete(emp.id)}
                       className="p-3 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                     >
@@ -156,12 +156,12 @@ const Employees = () => {
             </tbody>
           </table>
         </div>
-        
+
         {/* Pagination Controls */}
         {total > 10 && (
           <div className="shrink-0 px-10 py-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-               Showing Page <span className="text-slate-900">{page + 1}</span> of {Math.ceil(total / 10)}
+              Showing Page <span className="text-slate-900">{page + 1}</span> of {Math.ceil(total / 10)}
             </span>
             <div className="flex gap-6 items-center">
               <button
@@ -190,7 +190,7 @@ const Employees = () => {
             <div className="p-10">
               <h2 className="text-3xl font-black text-slate-900 tracking-tighter mb-2">New <span className="text-cyan-500">Member</span></h2>
               <p className="text-slate-400 text-sm font-medium mb-8">Onboard a new employee to the ASKworX internal system.</p>
-              
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-2 px-1">Full Name</label>
@@ -198,7 +198,7 @@ const Employees = () => {
                     required
                     type="text"
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 text-sm font-bold text-slate-800 focus:border-cyan-500 focus:outline-none transition-all"
                     placeholder="Enter name..."
                   />
@@ -209,7 +209,7 @@ const Employees = () => {
                     required
                     type="text"
                     value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 text-sm font-bold text-slate-800 focus:border-cyan-500 focus:outline-none transition-all"
                     placeholder="e.g. 918310029635"
                   />
