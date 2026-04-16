@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { getEmployees, sendAnnouncement } from '../api';
 import { Megaphone, Send, Users, ShieldAlert } from 'lucide-react';
+import Modal from '../components/Modal';
 
 const Announcements = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedPhones, setSelectedPhones] = useState([]);
   const [message, setMessage] = useState('');
+  
+  // Modal State
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'success' });
 
   useEffect(() => {
     fetchEmployees();
@@ -43,11 +47,21 @@ const Announcements = () => {
     setLoading(true);
     try {
       await sendAnnouncement({ message, phones: selectedPhones });
-      alert("Announcement broadcast started!");
+      setModal({
+        open: true,
+        title: 'Broadcast Launched! 🚀',
+        message: 'Your official announcement is now being pushed to the team via WhatsApp.',
+        type: 'success'
+      });
       setMessage('');
       setSelectedPhones([]);
     } catch (err) {
-      alert("Error sending announcement");
+      setModal({
+        open: true,
+        title: 'Launch Failed',
+        message: 'We encountered an error while attempting the broadcast. Please check your connection.',
+        type: 'error'
+      });
     } finally {
       setLoading(false);
     }
@@ -55,6 +69,13 @@ const Announcements = () => {
 
   return (
     <div className="p-10 lg:p-14 max-w-[1400px] mx-auto animate-in h-[calc(100vh-80px)] flex flex-col overflow-hidden">
+      <Modal 
+        isOpen={modal.open} 
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+      />
       <div className="flex justify-between items-end mb-12 shrink-0">
         <div>
           <div className="flex items-center gap-3 mb-3">

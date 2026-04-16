@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { getLeaveRequests, updateLeaveStatus } from '../api';
 import { CalendarRange, Check, X, Clock } from 'lucide-react';
+import Modal from '../components/Modal';
 
 const LeaveRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Modal State
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'success' });
 
   useEffect(() => {
     fetchRequests();
@@ -24,9 +28,20 @@ const LeaveRequests = () => {
   const handleAction = async (id, status) => {
     try {
       await updateLeaveStatus(id, status);
+      setModal({
+        open: true,
+        title: status === 'Approved' ? 'Leave Approved ✅' : 'Leave Rejected ❌',
+        message: `The employee has been notified via WhatsApp that their leave request was ${status.toLowerCase()}.`,
+        type: status === 'Approved' ? 'success' : 'error'
+      });
       fetchRequests();
     } catch (err) {
-      alert("Error updating leave request");
+      setModal({
+        open: true,
+        title: 'Action Failed',
+        message: 'There was an error communicating with the server. Please try again.',
+        type: 'error'
+      });
     }
   };
 
@@ -40,6 +55,13 @@ const LeaveRequests = () => {
 
   return (
     <div className="p-10 lg:p-14 max-w-[1800px] mx-auto animate-in h-[calc(100vh-80px)] flex flex-col overflow-hidden">
+      <Modal 
+        isOpen={modal.open} 
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+      />
       <div className="flex justify-between items-end mb-12 shrink-0">
         <div>
           <div className="flex items-center gap-3 mb-3">
