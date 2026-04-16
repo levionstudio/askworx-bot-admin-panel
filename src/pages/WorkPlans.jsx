@@ -16,7 +16,7 @@ const WorkPlans = () => {
     try {
       const resp = await getAttendance();
       // Filter only those who HAVE a work plan
-      const withPlans = (resp.data || []).filter(r => r.work_plan && r.work_plan !== '');
+      const withPlans = (resp.data.data || []).filter(r => r.work_plan && r.work_plan !== '');
       setRecords(withPlans);
     } catch (err) {
       console.error(err);

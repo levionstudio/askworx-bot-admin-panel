@@ -16,7 +16,7 @@ const EODReports = () => {
     try {
       const resp = await getAttendance();
       // Filter only those who HAVE an EOD report
-      const withReports = (resp.data || []).filter(r => r.eod_report && r.eod_report !== '');
+      const withReports = (resp.data.data || []).filter(r => r.eod_report && r.eod_report !== '');
       setRecords(withReports);
     } catch (err) {
       console.error(err);

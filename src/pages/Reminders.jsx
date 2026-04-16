@@ -20,7 +20,7 @@ const Reminders = () => {
   const fetchEmployees = async () => {
     try {
       const resp = await getEmployees();
-      setEmployees(resp.data || []);
+      setEmployees(resp.data.data || []);
     } catch (err) {
       console.error(err);
     }
