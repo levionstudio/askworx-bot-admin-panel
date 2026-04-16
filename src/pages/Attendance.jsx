@@ -1,0 +1,123 @@
+import React, { useState, useEffect } from 'react';
+import { getAttendance } from '../api';
+import { format } from 'date-fns';
+import { ClipboardCheck, Search } from 'lucide-react';
+
+const Attendance = () => {
+  const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    fetchAttendance();
+  }, []);
+
+  const fetchAttendance = async () => {
+    try {
+      const resp = await getAttendance();
+      setRecords(resp.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredRecords = records.filter(r => 
+    r.employee_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="p-10 lg:p-14 max-w-[1800px] mx-auto animate-in h-[calc(100vh-80px)] flex flex-col overflow-hidden">
+      <div className="flex justify-between items-end mb-12 shrink-0">
+        <div>
+          <div className="flex items-center gap-3 mb-3">
+             <div className="px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-600">Operations</span>
+             </div>
+          </div>
+          <h1 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter leading-none">
+             Attendance <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">Log</span>
+          </h1>
+        </div>
+        <div className="flex gap-4 items-center">
+            <div className="relative">
+                <Search className="w-4 h-4 text-slate-400 absolute left-5 top-1/2 -translate-y-1/2" />
+                <input 
+                    type="text"
+                    placeholder="Filter by employee..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="bg-white border-2 border-slate-100 rounded-2xl pl-12 pr-6 py-4 text-xs font-bold text-slate-700 focus:border-emerald-500 focus:outline-none w-[300px] transition-all"
+                />
+            </div>
+            <div className="text-right ml-4">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Total Entries</span>
+                <span className="text-3xl font-black text-slate-900 tracking-tighter tabular-nums">{filteredRecords.length}</span>
+            </div>
+        </div>
+      </div>
+
+      <div className="premium-card flex-1 overflow-hidden bg-white shadow-sm border-none flex flex-col min-h-0">
+        <div className="flex-1 overflow-auto no-scrollbar">
+          <table className="w-full text-left border-collapse min-w-[1000px]">
+            <thead className="sticky top-0 z-10">
+              <tr className="text-slate-500 text-[9px] font-black uppercase tracking-[0.2em] bg-slate-50/80 backdrop-blur-md">
+                <th className="px-10 py-6">Employee Name</th>
+                <th className="px-10 py-6">Date</th>
+                <th className="px-10 py-6">Check-In</th>
+                <th className="px-10 py-6">Check-Out</th>
+                <th className="px-10 py-6">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100/50">
+              {filteredRecords.map((r) => (
+                <tr key={r.id} className="group hover:bg-slate-50/50 transition-all">
+                  <td className="px-10 py-8">
+                    <span className="font-black text-slate-800 text-sm tracking-tight">{r.employee_name}</span>
+                  </td>
+                  <td className="px-10 py-8">
+                    <span className="text-xs font-bold text-slate-600">{format(new Date(r.date), 'dd MMM yyyy')}</span>
+                  </td>
+                  <td className="px-10 py-8">
+                    {r.check_in ? (
+                        <div className="flex flex-col">
+                            <span className="text-xs font-black text-emerald-600 uppercase tracking-widest">{format(new Date(r.check_in), 'hh:mm a')}</span>
+                            <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tighter mt-1">Arrival Recorded</span>
+                        </div>
+                    ) : '--:--'}
+                  </td>
+                  <td className="px-10 py-8">
+                    {r.check_out ? (
+                        <div className="flex flex-col">
+                            <span className="text-xs font-black text-blue-600 uppercase tracking-widest">{format(new Date(r.check_out), 'hh:mm a')}</span>
+                            <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tighter mt-1">Departure Recorded</span>
+                        </div>
+                    ) : (
+                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Ongoing...</span>
+                    )}
+                  </td>
+                  <td className="px-10 py-8">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100 w-fit">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="text-[9px] font-black uppercase tracking-widest">{r.check_out ? 'Completed' : 'Present'}</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {filteredRecords.length === 0 && !loading && (
+                <tr>
+                  <td colSpan="5" className="px-10 py-20 text-center">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">No attendance logs found</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Attendance;

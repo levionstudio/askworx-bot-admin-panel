@@ -10,6 +10,15 @@ import Contacts from './pages/Contacts';
 import Messages from './pages/Messages';
 import Campaigns from './pages/Campaigns';
 
+// Internal Management Pages
+import Employees from './pages/Employees';
+import Attendance from './pages/Attendance';
+import WorkPlans from './pages/WorkPlans';
+import EODReports from './pages/EODReports';
+import LeaveRequests from './pages/LeaveRequests';
+import Reminders from './pages/Reminders';
+import Announcements from './pages/Announcements';
+
 const ProtectedRoute = ({ children }) => {
   const [collapsed, setCollapsed] = React.useState(false);
   const token = localStorage.getItem('askworx_token');
@@ -39,7 +48,6 @@ const ProtectedRoute = ({ children }) => {
             </button>
             <div className="hidden sm:block">
               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 block mb-0.5">Control Center</span>
-
             </div>
           </div>
 
@@ -54,7 +62,7 @@ const ProtectedRoute = ({ children }) => {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto relative bg-[#F8F9FB]">
+        <main className="flex-1 overflow-y-auto relative bg-[#F8F9FB] no-scrollbar">
           <div className="animate-in">
             {children}
           </div>
@@ -75,6 +83,15 @@ function App() {
         <Route path="/contacts" element={<ProtectedRoute><Contacts /></ProtectedRoute>} />
         <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
         <Route path="/campaigns" element={<ProtectedRoute><Campaigns /></ProtectedRoute>} />
+        
+        {/* Internal Management Routes */}
+        <Route path="/employees" element={<ProtectedRoute><Employees /></ProtectedRoute>} />
+        <Route path="/attendance" element={<ProtectedRoute><Attendance /></ProtectedRoute>} />
+        <Route path="/work-plans" element={<ProtectedRoute><WorkPlans /></ProtectedRoute>} />
+        <Route path="/eod-reports" element={<ProtectedRoute><EODReports /></ProtectedRoute>} />
+        <Route path="/leave-requests" element={<ProtectedRoute><LeaveRequests /></ProtectedRoute>} />
+        <Route path="/reminders" element={<ProtectedRoute><Reminders /></ProtectedRoute>} />
+        <Route path="/announcements" element={<ProtectedRoute><Announcements /></ProtectedRoute>} />
       </Routes>
     </Router>
   );

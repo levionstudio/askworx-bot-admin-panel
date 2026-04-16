@@ -43,10 +43,20 @@ export const createCampaign = (data) => api.post('/campaigns', data);
 export const deleteCampaign = (id) => api.delete(`/campaigns/${id}`);
 export const getCampaignAnalytics = (id) => api.get(`/campaigns/${id}/analytics`);
 
+// Employee Management
+export const getEmployees = () => api.get('/employees');
+export const addEmployee = (data) => api.post('/employees', data);
+export const deleteEmployee = (id) => api.delete(`/employees/${id}`);
+export const getAttendance = () => api.get('/attendance');
+export const getLeaveRequests = () => api.get('/leave-requests');
+export const updateLeaveStatus = (id, status) => api.post('/leave-requests/update-status', { id, status });
+export const createReminder = (data) => api.post('/reminders', data);
+export const sendAnnouncement = (data) => api.post('/announcements', data);
+
 export const uploadImage = (file) => {
   const formData = new FormData();
   formData.append('file', file);
-  return api.post('/api/upload', formData, {
+  return api.post('/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   });
 };
