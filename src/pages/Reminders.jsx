@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getEmployees, createReminder } from '../api';
 import { Clock, Send, User, Calendar } from 'lucide-react';
+import Modal from '../components/Modal';
 
 const Reminders = () => {
   const [employees, setEmployees] = useState([]);
@@ -10,6 +11,7 @@ const Reminders = () => {
     desc: '',
     due: ''
   });
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'success' });
 
   useEffect(() => {
     fetchEmployees();
@@ -29,10 +31,20 @@ const Reminders = () => {
     setLoading(true);
     try {
       await createReminder(formData);
-      alert("Reminder scheduled successfully!");
+      setModal({
+        open: true,
+        title: 'Reminder Set! ⏰',
+        message: 'Your team member will receive a WhatsApp notification at the scheduled time.',
+        type: 'success'
+      });
       setFormData({ phone: '', desc: '', due: '' });
     } catch (err) {
-      alert("Error scheduling reminder");
+      setModal({
+        open: true,
+        title: 'Broadcast Failed',
+        message: 'We could not schedule the reminder. Please verify the date and try again.',
+        type: 'error'
+      });
     } finally {
       setLoading(false);
     }
@@ -40,6 +52,13 @@ const Reminders = () => {
 
   return (
     <div className="p-10 lg:p-14 max-w-[1200px] mx-auto animate-in h-[calc(100vh-80px)] flex flex-col overflow-hidden">
+      <Modal 
+        isOpen={modal.open} 
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+      />
       <div className="mb-12 shrink-0 text-center lg:text-left">
         <div className="flex items-center gap-3 mb-3 justify-center lg:justify-start">
            <div className="px-3 py-1 bg-amber-500/10 rounded-full border border-amber-500/20">

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { getEmployees, addEmployee, deleteEmployee } from '../api';
 import { UserPlus, Trash2, ShieldCheck, Mail } from 'lucide-react';
+import Modal from '../components/Modal';
 
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({ name: '', phone: '' });
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'success' });
 
   useEffect(() => {
     fetchEmployees();
@@ -29,24 +31,50 @@ const Employees = () => {
       await addEmployee(formData);
       setFormData({ name: '', phone: '' });
       setShowAddModal(false);
+      setModal({
+        open: true,
+        title: 'Team Member Added! 🏆',
+        message: `${formData.name} has been successfully onboarded to the ASKworX internal system.`,
+        type: 'success'
+      });
       fetchEmployees();
     } catch (err) {
-      alert("Error adding employee");
+      setModal({
+        open: true,
+        title: 'Onboarding Failed',
+        message: 'Could not register the employee. Please check the network or phone number format.',
+        type: 'error'
+      });
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure?")) return;
+    // We can keep the browser confirm for destructive actions if you want, 
+    // but for a true 'Maestro' feel, we should use a custom confirm later.
+    // For now, removing the alert on error.
+    if (!window.confirm("Are you sure you want to remove this team member?")) return;
     try {
       await deleteEmployee(id);
       fetchEmployees();
     } catch (err) {
-      alert("Error deleting employee");
+      setModal({
+        open: true,
+        title: 'Removal Failed',
+        message: 'There was an issue removing the record from the database.',
+        type: 'error'
+      });
     }
   };
 
   return (
     <div className="p-10 lg:p-14 max-w-[1800px] mx-auto animate-in h-[calc(100vh-80px)] flex flex-col overflow-hidden">
+      <Modal 
+        isOpen={modal.open} 
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+      />
       <div className="flex justify-between items-end mb-12 shrink-0">
         <div>
           <div className="flex items-center gap-3 mb-3">

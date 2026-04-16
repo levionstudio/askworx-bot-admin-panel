@@ -27,6 +27,8 @@ const EMPTY_POSTER = {
   type: 'poster', image_url: '', caption: '', scheduled_at: '',
 };
 
+import Modal from '../components/Modal';
+
 export default function Campaigns() {
   const [campaigns, setCampaigns]     = useState([]);
   const [loading, setLoading]         = useState(true);
@@ -39,6 +41,7 @@ export default function Campaigns() {
   const [analytics, setAnalytics]     = useState({});
   const [uploadSource, setUploadSource] = useState('url'); // 'url' or 'local'
   const [uploading, setUploading]       = useState(false);
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'success' });
 
   // Smarter base URL: use current origin if deployed
   const API_BASE = import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.includes('localhost') 
@@ -102,7 +105,12 @@ export default function Campaigns() {
       // Handle Local File Upload
       if (formType === 'poster' && uploadSource === 'local') {
         if (!form.localFile) {
-          alert('Please select a file to upload');
+          setModal({
+            open: true,
+            title: 'File Required',
+            message: 'Please select an image to upload before submitting.',
+            type: 'error'
+          });
           setSubmitting(false);
           return;
         }
@@ -116,11 +124,22 @@ export default function Campaigns() {
       const scheduledISO = new Date(form.scheduled_at).toISOString();
       await createCampaign({ ...finalForm, scheduled_at: scheduledISO });
       
+      setModal({
+        open: true,
+        title: 'Campaign Scheduled! 🚀',
+        message: 'Your broadcast has been successfully queued in the system.',
+        type: 'success'
+      });
       setShowForm(false);
       setForm(EMPTY_QUIZ);
       load();
     } catch (e) {
-      alert(e?.response?.data || 'Failed to create campaign');
+      setModal({
+        open: true,
+        title: 'Creation Failed',
+        message: e?.response?.data || 'Failed to create campaign. Please try again.',
+        type: 'error'
+      });
     } finally {
       setSubmitting(false);
       setUploading(false);
@@ -128,9 +147,18 @@ export default function Campaigns() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Cancel this campaign?')) return;
-    await deleteCampaign(id);
-    load();
+    if (!window.confirm('Are you sure you want to cancel this campaign?')) return;
+    try {
+      await deleteCampaign(id);
+      load();
+    } catch (err) {
+      setModal({
+        open: true,
+        title: 'Cancellation Failed',
+        message: 'There was an issue stopping the campaign. Please refresh and try again.',
+        type: 'error'
+      });
+    }
   };
 
   const toggleAnalytics = async (camp) => {
@@ -171,6 +199,13 @@ export default function Campaigns() {
 
   return (
     <div className="p-6 lg:p-10 max-w-5xl mx-auto">
+      <Modal 
+        isOpen={modal.open} 
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+      />
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>

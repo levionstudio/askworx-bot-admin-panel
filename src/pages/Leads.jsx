@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { getLeads, updateLeadStatus } from '../api';
 import { format } from 'date-fns';
 import { formatSlug } from '../utils';
+import Modal from '../components/Modal';
 
 const Leads = () => {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'expert', 'quote'
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'success' });
 
   useEffect(() => {
     fetchLeads();
@@ -26,10 +28,20 @@ const Leads = () => {
   const handleStatusUpdate = async (id, newStatus) => {
     try {
       await updateLeadStatus(id, newStatus);
+      setModal({
+        open: true,
+        title: 'Status Updated! ⚡',
+        message: `Lead status has been successfully updated to ${newStatus.replace('_', ' ')}.`,
+        type: 'success'
+      });
       fetchLeads(); // Refresh list
     } catch (err) {
-      console.error("Failed to update status:", err);
-      alert("Error updating status");
+      setModal({
+        open: true,
+        title: 'Update Failed',
+        message: 'Could not synchronize status with the database. Please try again.',
+        type: 'error'
+      });
     }
   };
 
@@ -62,6 +74,13 @@ const Leads = () => {
 
   return (
     <div className="p-10 lg:p-14 max-w-[1800px] mx-auto animate-in h-[calc(100vh-80px)] flex flex-col overflow-hidden">
+      <Modal 
+        isOpen={modal.open} 
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+      />
       <div className="flex justify-between items-end mb-12 shrink-0">
         <div>
           <div className="flex items-center gap-3 mb-3">
