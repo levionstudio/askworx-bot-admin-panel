@@ -19,9 +19,14 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsRes, leadsRes] = await Promise.all([getStats(), getLeads()]);
+        const [statsRes, leadsRes] = await Promise.all([
+          getStats(),
+          getLeads({ limit: 10, offset: 0 })
+        ]);
         setStats(statsRes.data || { total_contacts: 0, total_leads: 0, pending_callbacks: 0, new_leads: 0, total_messages: 0 });
-        setRecentLeads((leadsRes.data || []).slice(0, 5));
+        // Correctly parse paginated response and show all statuses including converted
+        const leadsArray = leadsRes.data?.data || leadsRes.data || [];
+        setRecentLeads(Array.isArray(leadsArray) ? leadsArray.slice(0, 10) : []);
       } catch (err) {
         console.error(err);
       } finally {
@@ -119,30 +124,42 @@ const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100/50">
-                  {recentLeads.map((lead, idx) => (
-                    <tr key={lead.id || idx} className="group hover:bg-slate-50/50 transition-all duration-300">
-                      <td className="px-10 py-5 text-[10px] font-black text-slate-400 group-hover:text-primary transition-colors uppercase">#ASK-{String(idx + 1).padStart(3, '0')}</td>
-                      <td className="px-10 py-5">
-                        <div className="flex flex-col">
-                          <span className="font-black text-slate-800 text-sm tracking-tight capitalize">{lead.name ? formatSlug(lead.name) : 'Awaiting Profile'}</span>
-                          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-none mt-1">{lead.company || 'Private'}</span>
-                        </div>
-                      </td>
-                      <td className="px-10 py-5">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-1.5 h-1.5 rounded-full ${lead.status === 'new' ? 'bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.4)]' : 'bg-green-600'}`}></div>
-                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-700">{lead.status || 'new'}</span>
-                        </div>
-                      </td>
-                      <td className="px-10 py-5 text-right text-[10px] font-black text-slate-600 uppercase tracking-widest tabular-nums">
-                        {lead.created_at ? format(new Date(lead.created_at), 'hh:mm a') : '--:--'}
-                      </td>
-                    </tr>
-                  ))}
+                  {recentLeads.map((lead, idx) => {
+                    const statusConfig = {
+                      new:         { dot: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)] animate-pulse', badge: 'bg-blue-50 text-blue-700 border-blue-100' },
+                      called:      { dot: 'bg-amber-500', badge: 'bg-amber-50 text-amber-700 border-amber-100' },
+                      in_progress: { dot: 'bg-purple-500', badge: 'bg-purple-50 text-purple-700 border-purple-100' },
+                      converted:   { dot: 'bg-emerald-500', badge: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
+                    };
+                    const cfg = statusConfig[lead.status] || statusConfig.new;
+                    return (
+                      <tr key={lead.id || idx} className="group hover:bg-slate-50/50 transition-all duration-300">
+                        <td className="px-10 py-5 text-[10px] font-black text-slate-400 group-hover:text-primary transition-colors uppercase">#ASK-{String(lead.id || idx + 1).padStart(3, '0')}</td>
+                        <td className="px-10 py-5">
+                          <div className="flex flex-col">
+                            <span className="font-black text-slate-800 text-sm tracking-tight capitalize">{lead.name ? formatSlug(lead.name) : 'Anonymous'}</span>
+                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none mt-1">{lead.company || lead.phone || 'Private'}</span>
+                          </div>
+                        </td>
+                        <td className="px-10 py-5">
+                          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest ${cfg.badge}`}>
+                            <div className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`}></div>
+                            {lead.status === 'in_progress' ? 'In Progress' : (lead.status || 'new')}
+                          </div>
+                        </td>
+                        <td className="px-10 py-5 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest tabular-nums">
+                          {lead.created_at ? format(new Date(lead.created_at), 'dd MMM, hh:mm a') : '--:--'}
+                        </td>
+                      </tr>
+                    );
+                  })}
                   {recentLeads.length === 0 && (
                     <tr>
                       <td colSpan="4" className="px-10 py-20 text-center">
-                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">Database is static</p>
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="w-8 h-8 border-2 border-slate-100 border-t-primary rounded-full animate-spin"></div>
+                          <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-300">Awaiting Live Data...</p>
+                        </div>
                       </td>
                     </tr>
                   )}
