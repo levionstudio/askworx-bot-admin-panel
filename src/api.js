@@ -28,29 +28,30 @@ api.interceptors.request.use((config) => {
 export const login = (password) => authApi.post('/api/login', { password });
 
 export const getStats = () => api.get('/stats');
-export const getLeads = () => api.get('/leads');
+export const getLeads = (params) => api.get('/leads', { params });
 export const updateLeadStatus = (id, status) => api.post('/leads/update-status', { id, status });
 export const getCallbacks = () => api.get('/callbacks');
 export const markCallbackDone = (id) => api.post('/callbacks/mark-done', { id });
 export const getContacts = () => api.get('/contacts');
-export const getMessages = () => api.get('/messages');
+export const getMessages = (params) => api.get('/messages', { params });
 export const getChatHistory = (phone) => api.get(`/messages/${phone}`);
 export const sendMessage = (phone, message) => api.post('/send-message', { phone, message });
 
 // Campaign Management
-export const getCampaigns = () => api.get('/campaigns');
+export const getCampaigns = (params) => api.get('/campaigns', { params });
 export const createCampaign = (data) => api.post('/campaigns', data);
 export const deleteCampaign = (id) => api.delete(`/campaigns/${id}`);
 export const getCampaignAnalytics = (id) => api.get(`/campaigns/${id}/analytics`);
 
 // Employee Management
-export const getEmployees = () => api.get('/employees');
+export const getEmployees = (params) => api.get('/employees', { params });
 export const addEmployee = (data) => api.post('/employees', data);
 export const deleteEmployee = (id) => api.delete(`/employees/${id}`);
-export const getAttendance = () => api.get('/attendance');
-export const getLeaveRequests = () => api.get('/leave-requests');
+export const getAttendance = (params) => api.get('/attendance', { params });
+export const getLeaveRequests = (params) => api.get('/leave-requests', { params });
 export const updateLeaveStatus = (id, status) => api.post('/leave-requests/update-status', { id, status });
 export const createReminder = (data) => api.post('/reminders', data);
+export const getRemindersHistory = (params) => api.get('/reminders/history', { params });
 export const sendAnnouncement = (data) => api.post('/announcements', data);
 
 export const uploadImage = (file) => {

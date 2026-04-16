@@ -14,10 +14,23 @@ const LeaveRequests = () => {
     fetchRequests();
   }, []);
 
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+  const [filters, setFilters] = useState({ start_date: '', end_date: '' });
+
+  useEffect(() => {
+    fetchRequests();
+  }, [page, filters]);
+
   const fetchRequests = async () => {
     try {
-      const resp = await getLeaveRequests();
-      setRequests(resp.data || []);
+      const resp = await getLeaveRequests({ 
+        limit: 10, 
+        offset: page * 10,
+        ...filters
+      });
+      setRequests(resp.data.data || []);
+      setTotal(resp.data.total || 0);
     } catch (err) {
       console.error(err);
     } finally {
@@ -73,11 +86,26 @@ const LeaveRequests = () => {
              Leave <span className="bg-gradient-to-r from-rose-500 to-orange-600 bg-clip-text text-transparent">Approvals</span>
           </h1>
         </div>
-        <div className="text-right">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Pending Requests</span>
-            <span className="text-3xl font-black text-slate-900 tracking-tighter tabular-nums">
-                {requests.filter(r => r.status === 'Pending').length}
-            </span>
+        <div className="flex items-center gap-8">
+            <div className="flex items-center gap-3 bg-slate-100 p-2 rounded-2xl">
+              <input 
+                type="date"
+                className="bg-white border-none rounded-xl px-4 py-2 text-[10px] font-bold text-slate-600 outline-none transition-all"
+                value={filters.start_date}
+                onChange={(e) => setFilters({ ...filters, start_date: e.target.value })}
+              />
+              <span className="text-slate-300 font-black">—</span>
+              <input 
+                type="date"
+                className="bg-white border-none rounded-xl px-4 py-2 text-[10px] font-bold text-slate-600 outline-none transition-all"
+                value={filters.end_date}
+                onChange={(e) => setFilters({ ...filters, end_date: e.target.value })}
+              />
+            </div>
+            <div className="text-right">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Total Records</span>
+                <span className="text-3xl font-black text-slate-900 tracking-tighter tabular-nums">{total}</span>
+            </div>
         </div>
       </div>
 
@@ -148,9 +176,29 @@ const LeaveRequests = () => {
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
-  );
-};
-
+        
+        {/* Pagination Controls */}
+        {total > 10 && (
+          <div className="shrink-0 px-10 py-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+               Showing Page <span className="text-slate-900">{page + 1}</span> of {Math.ceil(total / 10)}
+            </span>
+            <div className="flex gap-6 items-center">
+              <button
+                disabled={page === 0}
+                onClick={() => setPage(page - 1)}
+                className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-rose-600 disabled:opacity-30 transition-all"
+              >
+                Previous
+              </button>
+              <span className="w-px h-4 bg-slate-200" />
+              <button
+                disabled={(page + 1) * 10 >= total}
+                onClick={() => setPage(page + 1)}
+                className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-rose-600 disabled:opacity-30 transition-all"
+              >
+                Next
+              </button>
+            </div>
+          </div>
 export default LeaveRequests;

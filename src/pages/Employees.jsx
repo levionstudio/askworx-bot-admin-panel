@@ -10,14 +10,21 @@ const Employees = () => {
   const [formData, setFormData] = useState({ name: '', phone: '' });
   const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'success' });
 
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+
   useEffect(() => {
     fetchEmployees();
-  }, []);
+  }, [page]);
 
   const fetchEmployees = async () => {
     try {
-      const resp = await getEmployees();
-      setEmployees(resp.data || []);
+      const resp = await getEmployees({ 
+        limit: 10, 
+        offset: page * 10 
+      });
+      setEmployees(resp.data.data || []);
+      setTotal(resp.data.total || 0);
     } catch (err) {
       console.error(err);
     } finally {
@@ -149,6 +156,32 @@ const Employees = () => {
             </tbody>
           </table>
         </div>
+        
+        {/* Pagination Controls */}
+        {total > 10 && (
+          <div className="shrink-0 px-10 py-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+               Showing Page <span className="text-slate-900">{page + 1}</span> of {Math.ceil(total / 10)}
+            </span>
+            <div className="flex gap-6 items-center">
+              <button
+                disabled={page === 0}
+                onClick={() => setPage(page - 1)}
+                className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-cyan-600 disabled:opacity-30 transition-all"
+              >
+                Previous
+              </button>
+              <span className="w-px h-4 bg-slate-200" />
+              <button
+                disabled={(page + 1) * 10 >= total}
+                onClick={() => setPage(page + 1)}
+                className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-cyan-600 disabled:opacity-30 transition-all"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {showAddModal && (

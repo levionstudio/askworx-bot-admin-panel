@@ -48,11 +48,18 @@ export default function Campaigns() {
     ? import.meta.env.VITE_API_URL 
     : window.location.origin;
 
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+
   const load = async () => {
     try {
       setLoading(true);
-      const { data } = await getCampaigns();
-      setCampaigns(data || []);
+      const { data } = await getCampaigns({
+        limit: 10,
+        offset: page * 10
+      });
+      setCampaigns(data.data || []);
+      setTotal(data.total || 0);
     } catch (e) {
       console.error(e);
     } finally {
@@ -60,7 +67,7 @@ export default function Campaigns() {
     }
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [page]);
 
   const switchType = (t) => {
     setFormType(t);
@@ -494,6 +501,32 @@ export default function Campaigns() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {total > 10 && (
+        <div className="mt-10 px-6 py-4 bg-white border border-slate-200 rounded-2xl flex items-center justify-between shadow-sm">
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+             Showing Page <span className="text-slate-900">{page + 1}</span> of {Math.ceil(total / 10)}
+          </span>
+          <div className="flex gap-6 items-center">
+            <button
+              disabled={page === 0}
+              onClick={() => setPage(page - 1)}
+              className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 disabled:opacity-30 transition-all"
+            >
+              Previous
+            </button>
+            <span className="w-px h-4 bg-slate-200" />
+            <button
+              disabled={(page + 1) * 10 >= total}
+              onClick={() => setPage(page + 1)}
+              className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 disabled:opacity-30 transition-all"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </div>

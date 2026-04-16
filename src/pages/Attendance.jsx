@@ -8,24 +8,29 @@ const Attendance = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+  const [filters, setFilters] = useState({ start_date: '', end_date: '' });
+
   useEffect(() => {
     fetchAttendance();
-  }, []);
+  }, [page, filters]);
 
   const fetchAttendance = async () => {
     try {
-      const resp = await getAttendance();
-      setRecords(resp.data || []);
+      const resp = await getAttendance({
+        limit: 10,
+        offset: page * 10,
+        ...filters
+      });
+      setRecords(resp.data.data || []);
+      setTotal(resp.data.total || 0);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
-
-  const filteredRecords = records.filter(r => 
-    r.employee_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div className="p-10 lg:p-14 max-w-[1800px] mx-auto animate-in h-[calc(100vh-80px)] flex flex-col overflow-hidden">
@@ -41,19 +46,24 @@ const Attendance = () => {
           </h1>
         </div>
         <div className="flex gap-4 items-center">
-            <div className="relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-5 top-1/2 -translate-y-1/2" />
-                <input 
-                    type="text"
-                    placeholder="Filter by employee..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="bg-white border-2 border-slate-100 rounded-2xl pl-12 pr-6 py-4 text-xs font-bold text-slate-700 focus:border-emerald-500 focus:outline-none w-[300px] transition-all"
-                />
+            <div className="flex items-center gap-3 bg-slate-100 p-2 rounded-2xl">
+              <input 
+                type="date"
+                className="bg-white border-none rounded-xl px-4 py-2 text-[10px] font-bold text-slate-600 outline-none transition-all"
+                value={filters.start_date}
+                onChange={(e) => setFilters({ ...filters, start_date: e.target.value })}
+              />
+              <span className="text-slate-300 font-black">—</span>
+              <input 
+                type="date"
+                className="bg-white border-none rounded-xl px-4 py-2 text-[10px] font-bold text-slate-600 outline-none transition-all"
+                value={filters.end_date}
+                onChange={(e) => setFilters({ ...filters, end_date: e.target.value })}
+              />
             </div>
             <div className="text-right ml-4">
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Total Entries</span>
-                <span className="text-3xl font-black text-slate-900 tracking-tighter tabular-nums">{filteredRecords.length}</span>
+                <span className="text-3xl font-black text-slate-900 tracking-tighter tabular-nums">{total}</span>
             </div>
         </div>
       </div>
@@ -71,7 +81,7 @@ const Attendance = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/50">
-              {filteredRecords.map((r) => (
+              {records.map((r) => (
                 <tr key={r.id} className="group hover:bg-slate-50/50 transition-all">
                   <td className="px-10 py-8">
                     <span className="font-black text-slate-800 text-sm tracking-tight">{r.employee_name}</span>
@@ -105,7 +115,7 @@ const Attendance = () => {
                   </td>
                 </tr>
               ))}
-              {filteredRecords.length === 0 && !loading && (
+              {records.length === 0 && !loading && (
                 <tr>
                   <td colSpan="5" className="px-10 py-20 text-center">
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">No attendance logs found</p>
@@ -115,6 +125,32 @@ const Attendance = () => {
             </tbody>
           </table>
         </div>
+        
+        {/* Pagination Controls */}
+        {total > 10 && (
+          <div className="shrink-0 px-10 py-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+               Showing Page <span className="text-slate-900">{page + 1}</span> of {Math.ceil(total / 10)}
+            </span>
+            <div className="flex gap-6 items-center">
+              <button
+                disabled={page === 0}
+                onClick={() => setPage(page - 1)}
+                className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-emerald-600 disabled:opacity-30 transition-all"
+              >
+                Previous
+              </button>
+              <span className="w-px h-4 bg-slate-200" />
+              <button
+                disabled={(page + 1) * 10 >= total}
+                onClick={() => setPage(page + 1)}
+                className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-emerald-600 disabled:opacity-30 transition-all"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
