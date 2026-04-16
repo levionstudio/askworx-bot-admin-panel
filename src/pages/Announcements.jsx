@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { getEmployees, sendAnnouncement } from '../api';
-import { Megaphone, Send, Users, ShieldAlert } from 'lucide-react';
+import { getEmployees, sendAnnouncement, getRemindersHistory } from '../api';
+import { Megaphone, Send, Users, ShieldAlert, History } from 'lucide-react';
 import Modal from '../components/Modal';
+import { format } from 'date-fns';
 
 const Announcements = () => {
   const [employees, setEmployees] = useState([]);
@@ -12,15 +13,18 @@ const Announcements = () => {
   // Modal State
   const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'success' });
 
+  // Broadcast history — we reuse reminders history for the audit trail
   const [history, setHistory] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
-  const [filters, setFilters] = useState({ start_date: '', end_date: '' });
 
   useEffect(() => {
     fetchEmployees();
+  }, []);
+
+  useEffect(() => {
     fetchHistory();
-  }, [page, filters]);
+  }, [page]);
 
   const fetchEmployees = async () => {
     try {
@@ -35,8 +39,7 @@ const Announcements = () => {
     try {
       const resp = await getRemindersHistory({
         limit: 5,
-        offset: page * 5,
-        ...filters
+        offset: page * 5
       });
       setHistory(resp.data.data || []);
       setTotal(resp.data.total || 0);
@@ -75,7 +78,8 @@ const Announcements = () => {
       });
       setMessage('');
       setSelectedPhones([]);
-      fetchHistory(); // Refresh
+      // Refresh history after short delay to allow backend to process
+      setTimeout(() => fetchHistory(), 2000);
     } catch (err) {
       setModal({
         open: true,
@@ -151,6 +155,11 @@ const Announcements = () => {
                   </div>
                 </button>
               ))}
+              {employees.length === 0 && (
+                <div className="py-16 text-center">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">No employees registered</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -198,31 +207,20 @@ const Announcements = () => {
       {/* Sent History Section */}
       <div className="shrink-0 bg-slate-50/50 rounded-[40px] p-10 border border-slate-100">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
-          <div>
-            <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-1">Communication History</h3>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Audit trail of all sent notifications</p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <input
-              type="date"
-              className="bg-white border-2 border-slate-100 rounded-xl px-4 py-2 text-[10px] font-bold text-slate-600 focus:border-purple-500 outline-none transition-all"
-              value={filters.start_date}
-              onChange={(e) => setFilters({ ...filters, start_date: e.target.value })}
-            />
-            <span className="text-slate-300 font-black">—</span>
-            <input
-              type="date"
-              className="bg-white border-2 border-slate-100 rounded-xl px-4 py-2 text-[10px] font-bold text-slate-600 focus:border-purple-500 outline-none transition-all"
-              value={filters.end_date}
-              onChange={(e) => setFilters({ ...filters, end_date: e.target.value })}
-            />
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-purple-50 rounded-2xl text-purple-500">
+              <History className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-1">Communication History</h3>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Audit trail of all sent notifications</p>
+            </div>
           </div>
         </div>
 
         <div className="space-y-4">
           {history.length === 0 ? (
-            <div className="bg-white border-2 border-dashed border-slate-200 rounded-[32px] py-20 flex flex-center text-center">
+            <div className="bg-white border-2 border-dashed border-slate-200 rounded-[32px] py-20 flex text-center">
               <div className="mx-auto">
                 <Megaphone className="w-10 h-10 text-slate-200 mx-auto mb-4" />
                 <p className="text-sm font-bold text-slate-300 uppercase tracking-widest">No sent communications found</p>
@@ -238,17 +236,21 @@ const Announcements = () => {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-3 mb-1">
                       <span className="text-xs font-black text-slate-900 truncate">{item.name}</span>
-                      <span className="px-2 py-0.5 bg-slate-100 rounded-md text-[8px] font-black uppercase text-slate-400 tracking-widest">{item.status}</span>
+                      <span className={`px-2 py-0.5 rounded-md border text-[8px] font-black uppercase tracking-widest ${
+                        item.status === 'sent' 
+                          ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
+                          : 'bg-blue-50 text-blue-600 border-blue-100'
+                      }`}>{item.status}</span>
                     </div>
                     <p className="text-[11px] font-medium text-slate-500 line-clamp-1">{item.description}</p>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-[10px] font-black text-slate-900 mb-0.5 tabular-nums">
-                    {new Date(item.due_at).toLocaleDateString()}
+                    {format(new Date(item.due_at), 'dd MMM yyyy')}
                   </p>
                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest tabular-nums">
-                    {new Date(item.due_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {format(new Date(item.due_at), 'hh:mm a')}
                   </p>
                 </div>
               </div>
