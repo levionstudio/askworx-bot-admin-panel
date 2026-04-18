@@ -78,6 +78,7 @@ const Attendance = () => {
                 <th className="px-10 py-6">Check-In</th>
                 <th className="px-10 py-6">Check-Out</th>
                 <th className="px-10 py-6">Status</th>
+                <th className="px-10 py-6 text-right">Site Verification</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/50">
@@ -111,6 +112,35 @@ const Attendance = () => {
                     <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100 w-fit">
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       <span className="text-[9px] font-black uppercase tracking-widest">{r.check_out ? 'Completed' : 'Present'}</span>
+                    </div>
+                  </td>
+                  <td className="px-10 py-8 text-right">
+                    <div className="flex gap-3 justify-end">
+                      {r.check_in_lat && (
+                        <a
+                          href={`https://www.google.com/maps?q=${r.check_in_lat},${r.check_in_lng}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-3 py-1 bg-slate-100 hover:bg-emerald-50 text-[9px] font-black text-slate-600 hover:text-emerald-700 rounded-lg border border-slate-200 transition-all flex items-center gap-2"
+                        >
+                          <div className="w-1 h-1 rounded-full bg-emerald-500" />
+                          Arrival Loc
+                        </a>
+                      )}
+                      {r.check_out_lat && (
+                        <a
+                          href={`https://www.google.com/maps?q=${r.check_out_lat},${r.check_out_lng}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-3 py-1 bg-slate-100 hover:bg-blue-50 text-[9px] font-black text-slate-600 hover:text-blue-700 rounded-lg border border-slate-200 transition-all flex items-center gap-2"
+                        >
+                          <div className="w-1 h-1 rounded-full bg-blue-500" />
+                          Departure Loc
+                        </a>
+                      )}
+                      {!r.check_in_lat && !r.check_out_lat && (
+                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">No GPS Data</span>
+                      )}
                     </div>
                   </td>
                 </tr>
