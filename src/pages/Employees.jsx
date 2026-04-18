@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getEmployees, addEmployee, deleteEmployee } from '../api';
 import { UserPlus, Trash2, ShieldCheck, Mail } from 'lucide-react';
 import Modal from '../components/Modal';
+import ConfirmModal from '../components/ConfirmModal';
 
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
@@ -9,6 +10,7 @@ const Employees = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({ name: '', phone: '' });
   const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'success' });
+  const [confirm, setConfirm] = useState({ open: false, id: null });
 
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
@@ -55,14 +57,17 @@ const Employees = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    // We can keep the browser confirm for destructive actions if you want, 
-    // but for a true 'Maestro' feel, we should use a custom confirm later.
-    // For now, removing the alert on error.
-    if (!window.confirm("Are you sure you want to remove this team member?")) return;
+  const confirmDelete = async () => {
+    if (!confirm.id) return;
     try {
-      await deleteEmployee(id);
+      await deleteEmployee(confirm.id);
       fetchEmployees();
+      setModal({
+        open: true,
+        title: 'Member Removed',
+        message: 'The team member has been successfully removed from the system.',
+        type: 'success'
+      });
     } catch (err) {
       setModal({
         open: true,
@@ -81,6 +86,14 @@ const Employees = () => {
         title={modal.title}
         message={modal.message}
         type={modal.type}
+      />
+      <ConfirmModal
+        isOpen={confirm.open}
+        onClose={() => setConfirm({ open: false, id: null })}
+        onConfirm={confirmDelete}
+        title="Remove Team Member?"
+        message="This action will permanently revoke their access to the ASKworX internal hub. This cannot be undone."
+        confirmText="Remove Member"
       />
       <div className="flex justify-between items-end mb-12 shrink-0">
         <div>
@@ -138,7 +151,7 @@ const Employees = () => {
                   </td>
                   <td className="px-10 py-8 text-right">
                     <button
-                      onClick={() => handleDelete(emp.id)}
+                      onClick={() => setConfirm({ open: true, id: emp.id })}
                       className="p-3 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                     >
                       <Trash2 className="w-4 h-4" />

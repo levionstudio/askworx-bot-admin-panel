@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { getSettings, updateSettings } from '../api';
 import { Save, Bot, MessageSquare, LayoutGrid, Type } from 'lucide-react';
+import Modal from '../components/Modal';
 
 const BotConfig = () => {
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [modal, setModal] = useState({ open: false, title: '', message: '', type: 'success' });
 
   useEffect(() => {
     fetchSettings();
@@ -30,10 +32,20 @@ const BotConfig = () => {
     setSaving(true);
     try {
       await updateSettings(settings);
-      alert('Settings updated successfully! Bot will now use new templates.');
+      setModal({
+        open: true,
+        title: 'Settings Synced! 🧠',
+        message: 'The bot brain has been updated. New templates are now live on WhatsApp.',
+        type: 'success'
+      });
     } catch (err) {
       console.error(err);
-      alert('Failed to save settings.');
+      setModal({
+        open: true,
+        title: 'Sync Failed',
+        message: 'Could not update the bot settings. Please check your connection.',
+        type: 'error'
+      });
     } finally {
       setSaving(false);
     }
@@ -43,6 +55,13 @@ const BotConfig = () => {
 
   return (
     <div className="p-10 lg:p-14 max-w-[1200px] mx-auto animate-in">
+      <Modal
+        isOpen={modal.open}
+        onClose={() => setModal({ ...modal, open: false })}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+      />
       <div className="flex justify-between items-end mb-12">
         <div>
           <div className="flex items-center gap-3 mb-3">
