@@ -18,6 +18,7 @@ import EODReports from './pages/EODReports';
 import LeaveRequests from './pages/LeaveRequests';
 import Reminders from './pages/Reminders';
 import Announcements from './pages/Announcements';
+import BotConfig from './pages/BotConfig';
 
 const ProtectedRoute = ({ children }) => {
   const [collapsed, setCollapsed] = React.useState(false);
@@ -92,6 +93,7 @@ function App() {
         <Route path="/leave-requests" element={<ProtectedRoute><LeaveRequests /></ProtectedRoute>} />
         <Route path="/reminders" element={<ProtectedRoute><Reminders /></ProtectedRoute>} />
         <Route path="/announcements" element={<ProtectedRoute><Announcements /></ProtectedRoute>} />
+        <Route path="/config" element={<ProtectedRoute><BotConfig /></ProtectedRoute>} />
       </Routes>
     </Router>
   );

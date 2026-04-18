@@ -62,4 +62,7 @@ export const uploadImage = (file) => {
   });
 };
 
+export const getSettings = () => api.get('/settings');
+export const updateSettings = (data) => api.post('/settings', data);
+
 export default api;

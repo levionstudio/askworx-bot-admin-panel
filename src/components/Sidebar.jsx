@@ -15,7 +15,8 @@ import {
   CalendarRange,
   Clock,
   Megaphone,
-  UserCircle
+  UserCircle,
+  Settings2
 } from 'lucide-react';
 
 const Sidebar = ({ collapsed, setCollapsed }) => {
@@ -29,6 +30,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
 
   const mainItems = [
     { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/config', icon: Settings2, label: 'Bot Brain' },
     { to: '/campaigns', icon: Radio, label: 'Campaigns' },
     { to: '/leads', icon: UserPlus, label: 'Leads' },
     { to: '/callbacks', icon: PhoneCall, label: 'Callbacks' },
