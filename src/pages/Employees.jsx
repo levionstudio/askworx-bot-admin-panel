@@ -136,15 +136,15 @@ const Employees = () => {
                       </div>
                       <div className="flex flex-col">
                         <span className="font-black text-slate-800 text-sm tracking-tight">{emp.name}</span>
-                        <span className="text-[10px] text-slate-400 font-bold tracking-widest uppercase mt-0.5">EST. 2024</span>
+                        <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mt-1">Verified Member</span>
                       </div>
                     </div>
                   </td>
                   <td className="px-10 py-8">
-                    <span className="text-xs font-bold text-slate-600">📞 {emp.phone}</span>
+                    <span className="text-xs font-bold text-slate-600 tracking-widest">📞 {emp.phone}</span>
                   </td>
                   <td className="px-10 py-8">
-                    <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100 w-fit">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 text-slate-600 rounded-full border border-slate-200 w-fit">
                       <ShieldCheck className="w-3 h-3" />
                       <span className="text-[9px] font-black uppercase tracking-widest">{emp.role}</span>
                     </div>
@@ -217,12 +217,13 @@ const Employees = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-2 px-1">WhatsApp Number (with country code)</label>
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-2 px-1">WhatsApp Number (Digits only)</label>
                   <input
                     required
                     type="text"
+                    pattern="[0-9]+"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^0-9]/g, '') })}
                     className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 text-sm font-bold text-slate-800 focus:border-cyan-500 focus:outline-none transition-all"
                     placeholder="e.g. 918310029635"
                   />
