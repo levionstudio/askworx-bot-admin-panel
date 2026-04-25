@@ -65,4 +65,8 @@ export const uploadImage = (file) => {
 export const getSettings = () => api.get('/settings');
 export const updateSettings = (data) => api.post('/settings', data);
 
+export const getFaqs = () => api.get('/faqs');
+export const saveFaq = (data) => api.post('/faqs', data);
+export const deleteFaq = (id) => api.delete(`/faqs/${id}`);
+
 export default api;
