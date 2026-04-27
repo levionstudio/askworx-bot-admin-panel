@@ -68,9 +68,11 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
         ${collapsed ? 'w-0 -translate-x-full lg:w-24 lg:translate-x-0' : 'w-72 translate-x-0'}`}
     >
       <div className={`flex items-center gap-4 transition-all duration-500 overflow-hidden ${collapsed ? 'pt-10 px-0 justify-center' : 'p-10'}`}>
-        <div className="bg-gradient-to-br from-[#06B6D4] to-[#3B82F6] p-3 rounded-[18px] shadow-lg shadow-cyan-500/20 shrink-0">
-          <Cpu className="w-6 h-6 text-white" />
-        </div>
+        <img 
+          src="/logo.png" 
+          alt="Logo" 
+          className={`transition-all duration-500 object-contain ${collapsed ? 'w-10 h-10' : 'w-12 h-12'}`} 
+        />
         {!collapsed && (
           <div className="animate-in whitespace-nowrap">
             <h1 className="font-black text-2xl leading-none text-white tracking-tighter uppercase">ASKworX</h1>

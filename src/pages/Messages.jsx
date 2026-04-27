@@ -18,6 +18,8 @@ const Messages = () => {
 
   useEffect(() => {
     fetchContacts();
+    const interval = setInterval(fetchContacts, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {

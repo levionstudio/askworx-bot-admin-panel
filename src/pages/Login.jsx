@@ -34,8 +34,8 @@ const Login = () => {
 
       <div className="w-full max-w-[440px] relative z-10 animate-in">
         <div className="text-center mb-12">
-           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-[26px] shadow-2xl shadow-primary/20 mb-8 group transition-transform hover:scale-110">
-              <Cpu className="text-white w-10 h-10" />
+           <div className="inline-flex items-center justify-center w-24 h-24 mb-8 transition-transform hover:scale-110">
+              <img src="/logo.png" alt="ASKworX Logo" className="w-full h-full object-contain shadow-2xl" />
            </div>
            <h1 className="text-4xl font-black text-white tracking-tighter mb-3 uppercase">ASKworX</h1>
            <div className="flex items-center justify-center gap-3">
