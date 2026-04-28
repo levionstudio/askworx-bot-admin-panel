@@ -2,10 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { getContacts } from '../api';
 import { format } from 'date-fns';
 import { formatSlug } from '../utils';
+import { UserPlus, Send, Search, X, MessageSquare } from 'lucide-react';
+import { saveContact, sendMessage } from '../api';
 
 const Contacts = () => {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // Add Contact Modal State
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newContact, setNewContact] = useState({ name: '', phone: '' });
+  
+  // Send Message Modal State
+  const [isMsgModalOpen, setIsMsgModalOpen] = useState(false);
+  const [targetContact, setTargetContact] = useState(null);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     fetchContacts();
@@ -22,6 +34,37 @@ const Contacts = () => {
     }
   };
 
+  const handleAddContact = async (e) => {
+    e.preventDefault();
+    if (!newContact.phone.trim()) return;
+    try {
+      await saveContact(newContact);
+      setIsAddModalOpen(false);
+      setNewContact({ name: '', phone: '' });
+      fetchContacts();
+    } catch (err) {
+      alert('Failed to add contact');
+    }
+  };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!targetContact || !message.trim()) return;
+    try {
+      await sendMessage(targetContact.phone, message);
+      setIsMsgModalOpen(false);
+      setMessage('');
+      alert('Message sent successfully');
+    } catch (err) {
+      alert('Failed to send message');
+    }
+  };
+
+  const filteredContacts = contacts.filter(c => 
+    (c.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+    c.phone.includes(searchTerm)
+  );
+
   return (
     <div className="p-10 lg:p-14 max-w-[1800px] mx-auto animate-in h-[calc(100vh-80px)] flex flex-col overflow-hidden">
       <div className="flex justify-between items-end mb-12 shrink-0">
@@ -35,9 +78,30 @@ const Contacts = () => {
             Global <span className="bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">Contacts</span>
           </h1>
         </div>
-        <div className="text-right">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Authenticated</span>
-          <span className="text-3xl font-black text-indigo-500 tracking-tighter tabular-nums">{contacts.length}</span>
+        <div className="text-right flex flex-col items-end gap-4">
+          <div className="flex items-center gap-3">
+             <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" />
+                <input 
+                  type="text" 
+                  placeholder="Search contacts..." 
+                  className="bg-white border border-slate-100 pl-9 pr-4 py-2.5 rounded-xl text-[10px] font-bold outline-none focus:ring-4 focus:ring-indigo-500/5 transition-all w-48"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+             </div>
+             <button 
+               onClick={() => setIsAddModalOpen(true)}
+               className="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all active:scale-95 shadow-lg shadow-slate-900/10"
+             >
+               <UserPlus className="w-3.5 h-3.5" />
+               Add Contact
+             </button>
+          </div>
+          <div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Authenticated</span>
+            <span className="text-3xl font-black text-indigo-500 tracking-tighter tabular-nums">{filteredContacts.length}</span>
+          </div>
         </div>
       </div>
 
@@ -48,12 +112,12 @@ const Contacts = () => {
               <tr className="text-slate-500 text-[9px] font-black uppercase tracking-[0.2em] bg-slate-50/80 backdrop-blur-md">
                 <th className="px-10 py-6">User Identity</th>
                 <th className="px-10 py-6">Session ID</th>
-                <th className="px-10 py-6">Engagement Rating</th>
-                <th className="px-10 py-6 text-right">Synchronization</th>
+                <th className="px-10 py-6">Engagement</th>
+                <th className="px-10 py-6 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/50">
-              {contacts.map((contact, idx) => (
+              {filteredContacts.map((contact, idx) => (
                 <tr key={contact.id || idx} className="group hover:bg-slate-50/50 transition-all">
                   <td className="px-10 py-8">
                     <div className="flex items-center gap-6">
@@ -77,14 +141,19 @@ const Contacts = () => {
                     </div>
                   </td>
                   <td className="px-10 py-8 text-right">
-                    <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest block mb-1">Last Joined</span>
-                    <span className="text-xs font-bold text-slate-700">
-                      {contact.created_at ? format(new Date(contact.created_at), 'MMM d, yyyy') : '--:--'}
-                    </span>
+                    <button 
+                      onClick={() => {
+                        setTargetContact(contact);
+                        setIsMsgModalOpen(true);
+                      }}
+                      className="p-3 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all active:scale-95 group/btn"
+                    >
+                      <Send className="w-4 h-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                    </button>
                   </td>
                 </tr>
               ))}
-              {contacts.length === 0 && !loading && (
+              {filteredContacts.length === 0 && !loading && (
                 <tr>
                   <td colSpan="4" className="px-10 py-20 text-center">
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">No authenticated contacts found</p>
@@ -95,6 +164,84 @@ const Contacts = () => {
           </table>
         </div>
       </div>
+
+      {/* Add Contact Modal */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[40px] w-full max-w-md p-10 shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-10 duration-500 relative">
+            <button onClick={() => setIsAddModalOpen(false)} className="absolute top-8 right-8 p-2 hover:bg-slate-50 rounded-xl transition-all text-slate-300 hover:text-slate-900">
+              <X className="w-5 h-5" />
+            </button>
+            <div className="mb-8">
+              <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mb-6">
+                <UserPlus className="w-7 h-7 text-indigo-600" />
+              </div>
+              <h2 className="text-2xl font-black text-slate-900 tracking-tight">Add New Contact</h2>
+              <p className="text-sm font-bold text-slate-400 mt-2">Manual entry for broadcasting</p>
+            </div>
+            <form onSubmit={handleAddContact} className="space-y-6">
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2 px-1">Full Name</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. John Doe"
+                  className="w-full bg-slate-50 border-none px-6 py-4 rounded-2xl text-xs font-bold outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all"
+                  value={newContact.name}
+                  onChange={(e) => setNewContact({...newContact, name: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2 px-1">Phone Number (with country code)</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. 919876543210"
+                  className="w-full bg-slate-50 border-none px-6 py-4 rounded-2xl text-xs font-bold outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all"
+                  value={newContact.phone}
+                  onChange={(e) => setNewContact({...newContact, phone: e.target.value})}
+                  required
+                />
+              </div>
+              <button type="submit" className="w-full py-5 bg-indigo-600 text-white rounded-[24px] font-black text-xs uppercase tracking-[0.3em] shadow-xl shadow-indigo-600/20 hover:scale-[1.02] active:scale-95 transition-all mt-4">
+                Save Contact
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Message Modal */}
+      {isMsgModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[40px] w-full max-w-md p-10 shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-10 duration-500 relative">
+            <button onClick={() => setIsMsgModalOpen(false)} className="absolute top-8 right-8 p-2 hover:bg-slate-50 rounded-xl transition-all text-slate-300 hover:text-slate-900">
+              <X className="w-5 h-5" />
+            </button>
+            <div className="mb-8">
+              <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center mb-6">
+                <MessageSquare className="w-7 h-7 text-purple-600" />
+              </div>
+              <h2 className="text-2xl font-black text-slate-900 tracking-tight">Quick Message</h2>
+              <p className="text-sm font-bold text-slate-400 mt-2">Send to {targetContact?.name || targetContact?.phone}</p>
+            </div>
+            <form onSubmit={handleSendMessage} className="space-y-6">
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2 px-1">Message Content</label>
+                <textarea 
+                  rows="4"
+                  placeholder="Type your message here..."
+                  className="w-full bg-slate-50 border-none px-6 py-4 rounded-2xl text-xs font-bold outline-none focus:ring-4 focus:ring-purple-500/10 transition-all resize-none"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" className="w-full py-5 bg-purple-600 text-white rounded-[24px] font-black text-xs uppercase tracking-[0.3em] shadow-xl shadow-purple-600/20 hover:scale-[1.02] active:scale-95 transition-all mt-4">
+                Send Now
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

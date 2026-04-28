@@ -33,6 +33,7 @@ export const updateLeadStatus = (id, status) => api.post('/leads/update-status',
 export const getCallbacks = () => api.get('/callbacks');
 export const markCallbackDone = (id) => api.post('/callbacks/mark-done', { id });
 export const getContacts = () => api.get('/contacts');
+export const saveContact = (data) => api.post('/contacts', data);
 export const getMessages = (params) => api.get('/messages', { params });
 export const getChatHistory = (phone) => api.get(`/messages/${phone}`);
 export const sendMessage = (phone, message) => api.post('/send-message', { phone, message });

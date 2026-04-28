@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getContacts, getChatHistory, sendMessage } from '../api';
+import { getContacts, getChatHistory, sendMessage, saveContact } from '../api';
 import { useSearchParams } from 'react-router-dom';
-import { Send, Search, MessageSquare, ArrowLeft } from 'lucide-react';
+import { Send, Search, MessageSquare, ArrowLeft, Edit2, Check, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatSlug } from '../utils';
 
@@ -14,6 +14,8 @@ const Messages = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [userHasScrolledUp, setUserHasScrolledUp] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState('');
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -101,6 +103,18 @@ const Messages = () => {
     }
   };
 
+  const handleSaveName = async () => {
+    if (!selectedContact || !editedName.trim()) return;
+    try {
+      await saveContact({ phone: selectedContact.phone, name: editedName });
+      setIsEditingName(false);
+      fetchContacts();
+      setSelectedContact(prev => ({ ...prev, name: editedName }));
+    } catch (err) {
+      alert('Failed to save name');
+    }
+  };
+
   const filteredContacts = contacts.filter(c => 
     (c.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
     c.phone.includes(searchTerm)
@@ -167,7 +181,41 @@ const Messages = () => {
                     {(selectedContact.name || 'A')[0].toUpperCase()}
                  </div>
                  <div>
-                    <h3 className="font-black text-slate-900 text-sm tracking-tight capitalize leading-none mb-1">{selectedContact.name ? formatSlug(selectedContact.name) : selectedContact.phone}</h3>
+                    <div className="flex items-center gap-2 mb-1">
+                      {isEditingName ? (
+                        <div className="flex items-center gap-2">
+                          <input 
+                            type="text" 
+                            className="bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-primary/20"
+                            value={editedName}
+                            onChange={(e) => setEditedName(e.target.value)}
+                            autoFocus
+                            onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
+                          />
+                          <button onClick={handleSaveName} className="p-1 hover:bg-green-50 text-green-600 rounded-md">
+                            <Check className="w-3 h-3" />
+                          </button>
+                          <button onClick={() => setIsEditingName(false)} className="p-1 hover:bg-red-50 text-red-600 rounded-md">
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <h3 className="font-black text-slate-900 text-sm tracking-tight capitalize leading-none">
+                            {selectedContact.name ? formatSlug(selectedContact.name) : selectedContact.phone}
+                          </h3>
+                          <button 
+                            onClick={() => {
+                              setIsEditingName(true);
+                              setEditedName(selectedContact.name || '');
+                            }}
+                            className="p-1.5 hover:bg-slate-50 text-slate-400 hover:text-primary transition-colors rounded-lg"
+                          >
+                            <Edit2 className="w-3 h-3" />
+                          </button>
+                        </>
+                      )}
+                    </div>
                     <div className="flex items-center gap-1.5">
                        <div className="w-1 h-1 rounded-full bg-green-500"></div>
                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Online</span>
