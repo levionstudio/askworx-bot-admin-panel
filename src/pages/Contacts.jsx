@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getContacts } from '../api';
 import { format } from 'date-fns';
 import { formatSlug } from '../utils';
-import { UserPlus, Send, Search, X, MessageSquare } from 'lucide-react';
-import { saveContact, sendMessage } from '../api';
+import { UserPlus, Send, Search, X, MessageSquare, Trash2 } from 'lucide-react';
+import { saveContact, sendMessage, deleteContact } from '../api';
 
 const Contacts = () => {
   const [contacts, setContacts] = useState([]);
@@ -57,6 +57,16 @@ const Contacts = () => {
       alert('Message sent successfully');
     } catch (err) {
       alert('Failed to send message');
+    }
+  };
+
+  const handleDeleteContact = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this contact? They will no longer receive marketing broadcasts.')) return;
+    try {
+      await deleteContact(id);
+      fetchContacts();
+    } catch (err) {
+      alert('Failed to delete contact');
     }
   };
 
@@ -140,7 +150,14 @@ const Contacts = () => {
                       ))}
                     </div>
                   </td>
-                  <td className="px-10 py-8 text-right">
+                  <td className="px-10 py-8 text-right flex justify-end gap-2">
+                    <button 
+                      onClick={() => handleDeleteContact(contact.id)}
+                      className="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all active:scale-95 group/btn"
+                      title="Delete Contact"
+                    >
+                      <Trash2 className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
+                    </button>
                     <button 
                       onClick={() => {
                         setTargetContact(contact);
